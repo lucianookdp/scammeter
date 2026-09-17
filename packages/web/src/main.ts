@@ -29,7 +29,10 @@ function updateThemeLabel() {
 
 updateThemeLabel();
 document.getElementById("brand-name")!.textContent = t("extName");
-document.getElementById("tagline")!.textContent = t("extDescription");
+document.getElementById("tagline")!.textContent = t("tagline");
+document.getElementById("chip-open-source")!.textContent = t("trust_open_source");
+document.getElementById("chip-no-tracking")!.textContent = t("trust_no_tracking");
+document.getElementById("chip-cnpj-pix")!.textContent = t("trust_cnpj_pix");
 document.getElementById("label-link")!.textContent = t("input_link");
 document.getElementById("label-advanced")!.textContent = t("label_advanced");
 document.getElementById("label-cnpj")!.textContent = t("input_cnpj");

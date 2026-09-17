@@ -7,7 +7,7 @@
   "badge_alto_risco": { "message": "High risk" },
   "badge_nao_verificado": { "message": "Could not verify" },
 
-  "summary_baixo_risco": { "message": "Nothing suspicious found on this store." },
+  "summary_baixo_risco": { "message": "No risk signals found so far." },
   "summary_atencao": { "message": "A few signals deserve attention before you buy." },
   "summary_alto_risco": { "message": "Several strong scam signals on this store." },
   "summary_nao_verificado": { "message": "We couldn't verify this store right now." },
