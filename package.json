@@ -3,6 +3,8 @@
   "private": true,
   "packageManager": "pnpm@12.4.2",
   "scripts": {
+    "build": "pnpm build:proxy",
+    "start": "pnpm --filter @scammeter/proxy start",
     "test": "vitest run",
     "build:core": "pnpm --filter @scammeter/core build",
     "build:web": "pnpm build:core && pnpm --filter @scammeter/web build",
