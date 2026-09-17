@@ -6,7 +6,7 @@ type Messages = typeof pt;
 const pageStrings: Record<string, string> = {
   tagline: "Verifique se um site é confiável antes de continuar, e entenda o motivo.",
   input_link: "Link do site",
-  label_advanced: "Informar CNPJ ou código Pix manualmente",
+  label_advanced: "Adicionar CNPJ ou Pix manualmente",
   input_cnpj: "CNPJ da empresa",
   input_pix: "Código Pix copia-e-cola",
   button_verify: "Verificar",
