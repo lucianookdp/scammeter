@@ -43,12 +43,21 @@
 body {
   margin: 0;
   min-height: 100dvh;
-  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
   display: flex;
   justify-content: center;
   padding: 12vh 20px 60px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px),
+    radial-gradient(ellipse 900px 500px at 50% -5%, color-mix(in srgb, var(--green) 16%, transparent), transparent 70%);
+  background-size:
+    44px 44px,
+    44px 44px,
+    100% 100%;
+  background-attachment: fixed;
 }
 
 #app {
@@ -114,6 +123,7 @@ body {
   height: 19px;
   color: var(--green);
   flex-shrink: 0;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--green) 70%, transparent));
 }
 
 #brand-name {
@@ -162,11 +172,16 @@ body {
 
 .card {
   position: relative;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--green) 25%, var(--border));
   border-radius: 16px;
   padding: 32px 24px 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--green) 8%, transparent),
+    0 24px 60px -24px color-mix(in srgb, var(--green) 35%, transparent),
+    0 1px 2px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 .card::before {
@@ -175,8 +190,37 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 3px;
   background: linear-gradient(90deg, var(--green), var(--amber) 50%, var(--red));
+  background-size: 200% 100%;
+}
+.card.scanning::before {
+  animation: scan-sweep 1.4s linear infinite;
+}
+@keyframes scan-sweep {
+  from {
+    background-position: 0% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+/* Corner brackets — one pseudo-element, eight background layers (2 strokes per corner). */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background:
+    linear-gradient(var(--green), var(--green)) top 10px left 0 / 2px 16px no-repeat,
+    linear-gradient(var(--green), var(--green)) top 0 left 10px / 16px 2px no-repeat,
+    linear-gradient(var(--green), var(--green)) top 10px right 0 / 2px 16px no-repeat,
+    linear-gradient(var(--green), var(--green)) top 0 right 10px / 16px 2px no-repeat,
+    linear-gradient(var(--green), var(--green)) bottom 10px left 0 / 2px 16px no-repeat,
+    linear-gradient(var(--green), var(--green)) bottom 0 left 10px / 16px 2px no-repeat,
+    linear-gradient(var(--green), var(--green)) bottom 10px right 0 / 2px 16px no-repeat,
+    linear-gradient(var(--green), var(--green)) bottom 0 right 10px / 16px 2px no-repeat;
 }
 
 /* Gauge */
@@ -207,20 +251,25 @@ body {
 
 .zone-low {
   stroke: var(--green);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--green) 65%, transparent));
 }
 .zone-mid {
   stroke: var(--amber);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--amber) 65%, transparent));
 }
 .zone-high {
   stroke: var(--red);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--red) 65%, transparent));
 }
 
 .gauge.idle .zone {
   opacity: 0.28;
+  filter: none;
 }
 .gauge.unverified .zone {
   stroke: var(--ink-muted);
   opacity: 0.4;
+  filter: none;
 }
 
 .needle-group {
@@ -238,6 +287,7 @@ body {
   stroke-width: 4;
   stroke-linecap: round;
   transition: opacity 400ms ease;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--ink) 60%, transparent));
 }
 .hub {
   fill: var(--ink);
@@ -290,6 +340,24 @@ body {
   letter-spacing: -0.02em;
   min-width: 2ch;
   text-align: right;
+  transition:
+    color 300ms ease,
+    text-shadow 300ms ease;
+}
+.score-baixo_risco {
+  color: var(--green);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--green) 55%, transparent);
+}
+.score-atencao {
+  color: var(--amber);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--amber) 55%, transparent);
+}
+.score-alto_risco {
+  color: var(--red);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--red) 55%, transparent);
+}
+.score-nao_verificado {
+  color: var(--ink-muted);
 }
 
 .badge {
@@ -305,12 +373,15 @@ body {
 
 .badge-baixo_risco {
   background: var(--green);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--green) 55%, transparent);
 }
 .badge-atencao {
   background: var(--amber);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--amber) 55%, transparent);
 }
 .badge-alto_risco {
   background: var(--red);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--red) 55%, transparent);
 }
 .badge-nao_verificado {
   background: var(--ink-muted);
@@ -359,6 +430,11 @@ summary:focus-visible {
   outline-offset: 2px;
 }
 
+input:focus-visible,
+textarea:focus-visible {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 18%, transparent);
+}
+
 .field-error {
   color: var(--red);
   font-size: 0.8125rem;
@@ -379,12 +455,15 @@ button[type="submit"] {
   background: var(--green);
   color: #fff;
   cursor: pointer;
+  box-shadow: 0 0 0 0 transparent;
   transition:
     transform 150ms ease,
-    opacity 150ms ease;
+    opacity 150ms ease,
+    box-shadow 200ms ease;
 }
 button:hover {
   opacity: 0.92;
+  box-shadow: 0 0 28px color-mix(in srgb, var(--green) 45%, transparent);
 }
 button:active {
   transform: scale(0.98);
@@ -475,7 +554,8 @@ button:disabled {
   .needle-group,
   .zone,
   .reasons,
-  .gauge.loading {
+  .gauge.loading,
+  .card.scanning::before {
     transition: none !important;
     animation: none !important;
   }

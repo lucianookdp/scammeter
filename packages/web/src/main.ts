@@ -56,6 +56,7 @@ const pixInput = document.getElementById("input-pix") as HTMLTextAreaElement;
 const advanced = document.getElementById("advanced") as HTMLDetailsElement;
 const scanHint = document.getElementById("scan-hint") as HTMLSpanElement;
 const gauge = document.querySelector(".gauge") as HTMLElement;
+const card = document.querySelector(".card") as HTMLElement;
 const needleGroup = document.querySelector(".needle-group") as HTMLElement;
 const scoreEl = document.getElementById("score")!;
 const badgeEl = document.getElementById("badge")!;
@@ -97,6 +98,7 @@ function animateScore(target: number) {
 function setLoading(isLoading: boolean) {
   submitBtn.disabled = isLoading;
   gauge.classList.toggle("loading", isLoading);
+  card.classList.toggle("scanning", isLoading);
   if (isLoading) {
     captionEl.textContent = t("checking");
     reasonsEl.classList.remove("visible");
@@ -114,6 +116,7 @@ function renderResult(result: ScoreResult) {
   } else {
     animateScore(result.score);
   }
+  scoreEl.className = `score score-${result.verdict}`;
 
   badgeEl.textContent = t(`badge_${result.verdict}`);
   badgeEl.className = `badge badge-${result.verdict}`;
