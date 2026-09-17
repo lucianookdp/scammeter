@@ -12,7 +12,6 @@ const pageStrings: Record<string, string> = {
   button_verify: "Verificar",
   gauge_idle: "Cole o link para começar",
   checking: "Analisando…",
-  install_extension: "Instale a extensão para verificar qualquer loja automaticamente.",
   error_invalid_url: "Cole um link válido de uma loja.",
   theme_to_dark: "Mudar para tema escuro",
   theme_to_light: "Mudar para tema claro",
