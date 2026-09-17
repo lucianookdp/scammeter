@@ -1,0 +1,44 @@
+{
+  "extName": { "message": "Scammeter" },
+  "extDescription": { "message": "Tells you if an online store is a scam, and why." },
+
+  "badge_baixo_risco": { "message": "Low risk" },
+  "badge_atencao": { "message": "Caution" },
+  "badge_alto_risco": { "message": "High risk" },
+  "badge_nao_verificado": { "message": "Could not verify" },
+
+  "summary_baixo_risco": { "message": "Nothing suspicious found on this store." },
+  "summary_atencao": { "message": "A few signals deserve attention before you buy." },
+  "summary_alto_risco": { "message": "Several strong scam signals on this store." },
+  "summary_nao_verificado": { "message": "We couldn't verify this store right now." },
+
+  "reason_blocklist": { "message": "This site is on a known-scam list." },
+  "reason_pix_personal": { "message": "The payment goes to a person, not the company." },
+  "reason_pix_wrong_cnpj": { "message": "The payment goes to a different company than the store." },
+  "reason_cnpj_inactive": { "message": "The company's tax ID is not active." },
+  "reason_no_cnpj": { "message": "The store doesn't show a tax ID, which the law requires." },
+  "reason_domain_new": { "message": "This site was created only days ago." },
+  "reason_brand_lookalike": { "message": "The address looks like it's imitating a known brand." },
+  "reason_cnae_mismatch": { "message": "The company is registered under a different business activity." },
+  "reason_registrant_mismatch": { "message": "The site is registered under a different name." },
+  "reason_missing_address": { "message": "The company address is missing." },
+  "reason_missing_return_policy": { "message": "The return policy is missing." },
+  "reason_contact_only_whatsapp": { "message": "The only contact is WhatsApp or a free email address." },
+  "reason_cheap_tld_private_whois": { "message": "This kind of address is common in scams." },
+  "reason_broken_social_links": { "message": "The social media links don't work." },
+  "reason_tranco_top100k": { "message": "This site gets a lot of traffic." },
+  "reason_domain_established": { "message": "The company and site have matched for years." },
+  "reason_marketplace_notice": { "message": "This analysis covers the seller, not the marketplace itself." },
+
+  "section_company": { "message": "Company" },
+  "section_site": { "message": "Site" },
+  "field_status": { "message": "Status" },
+  "field_opened": { "message": "Opened" },
+  "field_activity": { "message": "Business activity" },
+  "field_city": { "message": "City" },
+  "field_domain_age": { "message": "Domain age" },
+
+  "footer_disclaimer": { "message": "This is an automated analysis. When in doubt, don't pay." },
+  "popup_checking": { "message": "Analyzing this page…" },
+  "popup_no_page": { "message": "Open an online store to see the analysis." }
+}

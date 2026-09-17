@@ -1,0 +1,155 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #666;
+  --border: #e5e5e5;
+  --green: #1e7d32;
+  --yellow: #8a5b00;
+  --red: #b3261e;
+  --gray: #666;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212;
+    --fg: #f0f0f0;
+    --muted: #a0a0a0;
+    --border: #2e2f31;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+
+#brand {
+  margin: 0 0 4px;
+  font-size: 28px;
+}
+
+#tagline {
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input,
+textarea {
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg);
+  resize: vertical;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--green);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+#result {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+}
+
+.badge-baixo_risco {
+  background: var(--green);
+}
+.badge-atencao {
+  background: var(--yellow);
+}
+.badge-alto_risco {
+  background: var(--red);
+}
+.badge-nao_verificado {
+  background: var(--gray);
+}
+
+.summary {
+  font-weight: 500;
+  margin: 12px 0;
+}
+
+.reasons {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.reason {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.reason-alert::before {
+  content: "⚠ ";
+}
+.reason-ok::before {
+  content: "✓ ";
+  color: var(--green);
+}
+.reason-unverified::before {
+  content: "？ ";
+  color: var(--muted);
+}
+
+.footer,
+.loading,
+.error,
+#install-note {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.error {
+  color: var(--red);
+}

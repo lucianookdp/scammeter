@@ -1,0 +1,46 @@
+import { browser } from "wxt/browser";
+import type { StoredAnalysis } from "../../lib/messages";
+import { storageKeyForTab } from "../../lib/messages";
+
+const app = document.getElementById("app")!;
+
+function t(key: string): string {
+  return browser.i18n.getMessage(key) || key;
+}
+
+function reasonLabel(reasonKey: string): string {
+  return t(reasonKey.replace(/\./g, "_"));
+}
+
+function render(analysis: StoredAnalysis | null) {
+  if (!analysis) {
+    app.innerHTML = `<p class="empty">${t("popup_no_page")}</p>`;
+    return;
+  }
+
+  const { result } = analysis;
+  const reasons = result.signals
+    .map((s) => `<li class="reason reason-${s.status}">${reasonLabel(s.reasonKey)}</li>`)
+    .join("");
+
+  app.innerHTML = `
+    <div class="badge badge-${result.verdict}">${t(`badge_${result.verdict}`)}</div>
+    <p class="summary">${t(`summary_${result.verdict}`)}</p>
+    <ul class="reasons">${reasons}</ul>
+    <p class="footer">${t("footer_disclaimer")}</p>
+  `;
+}
+
+async function init() {
+  app.innerHTML = `<p class="loading">${t("popup_checking")}</p>`;
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) {
+    render(null);
+    return;
+  }
+  const key = storageKeyForTab(tab.id);
+  const stored = await browser.storage.session.get(key);
+  render((stored[key] as StoredAnalysis) ?? null);
+}
+
+void init();
