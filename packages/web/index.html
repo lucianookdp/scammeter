@@ -3,32 +3,113 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Scammeter · Golpômetro</title>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Cole o link de uma loja online e veja se é golpe, e por quê." />
+    <title>Golpômetro · Scammeter</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./src/style.css" />
+    <script>
+      // Set the theme before first paint so there's no flash of the wrong colors.
+      (function () {
+        try {
+          var saved = localStorage.getItem("scammeter-theme");
+          var theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <main id="app">
-      <h1 id="brand">Scammeter</h1>
+      <header class="brand">
+        <svg class="mark" viewBox="0 0 200 120" aria-hidden="true">
+          <path d="M20,100 A80,80 0 0 1 180,100" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" />
+          <line x1="100" y1="100" x2="100" y2="32" stroke="currentColor" stroke-width="11" stroke-linecap="round" transform="rotate(25 100 100)" />
+          <circle cx="100" cy="100" r="11" fill="currentColor" />
+        </svg>
+        <span id="brand-name"></span>
+
+        <div class="controls">
+          <button type="button" id="theme-toggle" class="icon-btn">
+            <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.93 4.93 1.41 1.41" />
+              <path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m6.34 17.66-1.41 1.41" />
+              <path d="m19.07 4.93-1.41 1.41" />
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+
       <p id="tagline"></p>
 
-      <form id="check-form">
-        <label>
+      <section class="gauge-panel">
+        <svg class="gauge idle" viewBox="0 0 200 112" role="img" aria-label="Medidor de risco">
+          <path class="zone zone-low" d="M20,100 A80,80 0 0 1 33.9,54.92" />
+          <path class="zone zone-mid" d="M33.9,54.92 A80,80 0 0 1 97.49,20.04" />
+          <path class="zone zone-high" d="M97.49,20.04 A80,80 0 0 1 180,100" />
+          <g class="needle-group">
+            <line class="needle" x1="100" y1="100" x2="100" y2="32" />
+          </g>
+          <circle class="hub-ring" cx="100" cy="100" r="8" />
+          <circle class="hub" cx="100" cy="100" r="3.5" />
+        </svg>
+        <div class="readout">
+          <span id="score" class="score">—</span>
+          <span id="badge" class="badge"></span>
+        </div>
+        <p id="gauge-caption" class="gauge-caption" aria-live="polite"></p>
+      </section>
+
+      <form id="check-form" novalidate>
+        <label class="field">
           <span id="label-link"></span>
-          <input id="input-link" type="url" required placeholder="https://" />
+          <input id="input-link" type="url" required placeholder="https://" autocomplete="url" />
+          <span id="link-error" class="field-error" hidden></span>
         </label>
-        <label>
-          <span id="label-cnpj"></span>
-          <input id="input-cnpj" type="text" placeholder="00.000.000/0001-00" />
-        </label>
-        <label>
-          <span id="label-pix"></span>
-          <textarea id="input-pix" rows="2" placeholder="00020126..."></textarea>
-        </label>
+
+        <details id="advanced">
+          <summary id="label-advanced"></summary>
+          <label class="field">
+            <span id="label-cnpj"></span>
+            <input id="input-cnpj" type="text" placeholder="00.000.000/0001-00" />
+          </label>
+          <label class="field">
+            <span id="label-pix"></span>
+            <textarea id="input-pix" rows="2" placeholder="00020126..."></textarea>
+          </label>
+        </details>
+
         <button type="submit" id="submit-btn"></button>
       </form>
 
-      <section id="result" hidden></section>
-      <p id="install-note"></p>
+      <ul id="reasons" class="reasons" hidden></ul>
+
+      <p id="footer-note" class="footnote"></p>
+      <p class="footnote install-note">
+        <svg class="icon-puzzle" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+          />
+        </svg>
+        <span id="install-note"></span>
+      </p>
     </main>
     <script type="module" src="./src/main.ts"></script>
   </body>
