@@ -52,45 +52,93 @@ body {
   color: var(--ink);
   font-family: var(--font-sans);
   display: flex;
-  justify-content: center;
-  padding: 12vh 20px 60px;
+  flex-direction: column;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+}
+.site-header-inner {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+.site-footer-inner {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
 }
 
 #app {
   width: 100%;
   max-width: 30rem;
+  margin: 0 auto;
+  padding: 40px 20px;
+  flex: 1;
 }
 
 /* Larger screens get a two-column layout instead of a scaled-up mobile page:
    a sticky intro panel beside the actual tool, so the extra width is used
    for something rather than just wider margins. */
 @media (min-width: 900px) {
-  body {
-    padding: 9vh 40px 60px;
-    align-items: flex-start;
+  .site-header-inner,
+  .site-footer-inner,
+  #app {
+    max-width: 76rem;
+    padding-left: 40px;
+    padding-right: 40px;
   }
   #app {
-    max-width: 64rem;
+    padding-top: 7vh;
+    padding-bottom: 50px;
     display: grid;
-    grid-template-columns: minmax(260px, 21rem) minmax(0, 30rem);
+    grid-template-columns: minmax(260px, 21rem) minmax(0, 42rem);
     column-gap: 56px;
-    grid-template-areas:
-      "intro card"
-      "intro footer";
+    grid-template-areas: "intro card";
+    align-items: start;
   }
   .intro {
     grid-area: intro;
     position: sticky;
-    top: 9vh;
+    top: 7vh;
   }
   .card {
     grid-area: card;
   }
-  #footer-note {
-    grid-area: footer;
-  }
   #tagline {
     font-size: 1rem;
+  }
+
+  /* Inside the card: gauge and form side by side instead of stacked, so a
+     result (gauge + form + reasons + facts) needs far less scrolling. */
+  .card {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) minmax(260px, 1.15fr);
+    column-gap: 32px;
+  }
+  .gauge-panel {
+    grid-column: 1;
+    margin-bottom: 0;
+  }
+  #check-form {
+    grid-column: 2;
+  }
+  .reasons,
+  .facts {
+    grid-column: 1 / -1;
   }
 }
 
@@ -98,14 +146,6 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 6px;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
 }
 
 .icon-btn {
@@ -330,6 +370,12 @@ body {
   text-align: right;
   transition: color 300ms ease;
 }
+/* Idle placeholder ("—", no badge next to it yet): center it instead of
+   right-aligning inside the space reserved for a future 2-3 digit score —
+   right-aligned-with-nothing-after-it reads as off-center/crooked. */
+.readout:has(.badge:empty) .score {
+  text-align: center;
+}
 .score-baixo_risco {
   color: var(--green);
 }
@@ -393,6 +439,7 @@ form {
 
 input,
 textarea {
+  width: 100%;
   font: 0.9375rem/1.4 var(--font-sans);
   padding: 11px 13px;
   border: 1px solid var(--border);
@@ -400,6 +447,27 @@ textarea {
   background: var(--surface);
   color: var(--ink);
   resize: vertical;
+}
+
+.input-with-icon {
+  position: relative;
+}
+.input-with-icon .input-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: var(--ink-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.input-with-icon input {
+  padding-left: 38px;
 }
 
 input:focus-visible,
@@ -426,6 +494,10 @@ textarea:focus-visible {
 }
 
 button[type="submit"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font: inherit;
   font-weight: 600;
   font-size: 0.9375rem;
@@ -438,6 +510,16 @@ button[type="submit"] {
   transition:
     transform 150ms ease,
     opacity 150ms ease;
+}
+button[type="submit"] svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 button:hover {
   opacity: 0.92;
@@ -580,8 +662,31 @@ button:disabled {
 .footnote {
   color: var(--ink-muted);
   font-size: 0.8125rem;
-  text-align: center;
-  margin: 18px 0 0;
+  margin: 0;
+}
+
+.footer-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.footer-link:hover {
+  color: var(--green);
+}
+.footer-link svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 @media (prefers-reduced-motion: reduce) {

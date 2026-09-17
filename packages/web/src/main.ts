@@ -46,8 +46,9 @@ document.getElementById("label-link")!.textContent = t("input_link");
 document.getElementById("label-advanced-text")!.textContent = t("label_advanced");
 document.getElementById("label-cnpj")!.textContent = t("input_cnpj");
 document.getElementById("label-pix")!.textContent = t("input_pix");
-document.getElementById("submit-btn")!.textContent = t("button_verify");
+document.getElementById("submit-btn-text")!.textContent = t("button_verify");
 document.getElementById("footer-note")!.textContent = t("footer_disclaimer");
+document.getElementById("footer-github-text")!.textContent = t("footer_github");
 
 const form = document.getElementById("check-form") as HTMLFormElement;
 const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
