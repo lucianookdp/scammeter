@@ -1,4 +1,4 @@
-# Scammeter (Golpômetro)
+# Scammeter
 
 A browser extension and web page that say, in plain language, whether a
 Brazilian online store is a scam — and why. Focused on new scams that
@@ -6,7 +6,7 @@ aren't on any denunciation list yet: it cross-checks the CNPJ against the
 domain and, at checkout, checks whether the Pix key actually belongs to the
 store.
 
-🇧🇷 [Leia em português abaixo](#golpômetro-pt-br).
+🇧🇷 [Leia em português abaixo](#scammeter-pt-br).
 
 ## How it works
 
@@ -45,7 +45,7 @@ MVP in progress. See the scope doc's roadmap for the v0.1–v0.6 plan.
 
 ---
 
-## Golpômetro (PT-BR)
+## Scammeter (PT-BR)
 
 Uma extensão de navegador e uma página web que dizem, em linguagem simples, se
 uma loja online brasileira é golpe e por quê. O foco é o golpe novo, que ainda
