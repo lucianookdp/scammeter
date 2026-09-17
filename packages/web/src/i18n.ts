@@ -4,15 +4,15 @@ type Messages = typeof pt;
 
 // Page-only copy, not shared with the extension's manifest-driven _locales.
 const pageStrings: Record<string, string> = {
-  tagline: "Verifique se uma loja é confiável antes de comprar, e entenda o motivo.",
-  input_link: "Link da loja",
+  tagline: "Verifique se um site é confiável antes de continuar, e entenda o motivo.",
+  input_link: "Link do site",
   label_advanced: "Verificar CNPJ ou código Pix também",
-  input_cnpj: "CNPJ da loja",
+  input_cnpj: "CNPJ da empresa",
   input_pix: "Código Pix copia-e-cola",
   button_verify: "Verificar",
   gauge_idle: "Cole o link para começar",
   checking: "Analisando…",
-  error_invalid_url: "Cole um link válido de uma loja.",
+  error_invalid_url: "Cole um link válido.",
   theme_to_dark: "Mudar para tema escuro",
   theme_to_light: "Mudar para tema claro",
   trust_open_source: "Código aberto",

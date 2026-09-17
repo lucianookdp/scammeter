@@ -1,6 +1,6 @@
 {
   "extName": { "message": "Scammeter" },
-  "extDescription": { "message": "Diz se uma loja online é golpe, e por quê." },
+  "extDescription": { "message": "Diz se um site brasileiro é golpe, e por quê." },
 
   "badge_baixo_risco": { "message": "Baixo risco" },
   "badge_atencao": { "message": "Atenção" },
@@ -8,15 +8,15 @@
   "badge_nao_verificado": { "message": "Não foi possível verificar" },
 
   "summary_baixo_risco": { "message": "Nenhum sinal de risco encontrado até agora." },
-  "summary_atencao": { "message": "Alguns sinais merecem atenção antes de comprar." },
-  "summary_alto_risco": { "message": "Vários sinais fortes de golpe nesta loja." },
-  "summary_nao_verificado": { "message": "Não conseguimos verificar esta loja agora." },
+  "summary_atencao": { "message": "Alguns sinais merecem atenção antes de continuar." },
+  "summary_alto_risco": { "message": "Vários sinais fortes de golpe neste site." },
+  "summary_nao_verificado": { "message": "Não conseguimos verificar este site agora." },
 
   "reason_blocklist": { "message": "Este site está em uma lista de golpes conhecidos." },
   "reason_pix_personal": { "message": "O Pix vai para uma pessoa, não para a empresa." },
-  "reason_pix_wrong_cnpj": { "message": "O Pix vai para outra empresa, diferente da loja." },
+  "reason_pix_wrong_cnpj": { "message": "O Pix vai para outra empresa, diferente da que aparece no site." },
   "reason_cnpj_inactive": { "message": "O CNPJ informado não está ativo." },
-  "reason_no_cnpj": { "message": "A loja não informa CNPJ, o que a lei exige." },
+  "reason_no_cnpj": { "message": "O site não informa CNPJ." },
   "reason_domain_new": { "message": "Este site foi criado há poucos dias." },
   "reason_brand_lookalike": { "message": "O endereço parece imitar uma marca conhecida." },
   "reason_cnae_mismatch": { "message": "A empresa é registrada com outra atividade." },
@@ -40,5 +40,5 @@
 
   "footer_disclaimer": { "message": "Esta é uma análise automática. Na dúvida, não pague." },
   "popup_checking": { "message": "Analisando esta página…" },
-  "popup_no_page": { "message": "Abra uma loja online para ver a análise." }
+  "popup_no_page": { "message": "Abra um site para ver a análise." }
 }
