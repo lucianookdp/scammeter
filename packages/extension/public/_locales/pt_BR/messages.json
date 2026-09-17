@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "Golpômetro" },
+  "extName": { "message": "Scammeter" },
   "extDescription": { "message": "Diz se uma loja online é golpe, e por quê." },
 
   "badge_baixo_risco": { "message": "Baixo risco" },

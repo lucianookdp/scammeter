@@ -1,6 +1,6 @@
 # Security Policy
 
-Scammeter/Golpômetro treats every analyzed page as hostile: it assumes the page
+Scammeter treats every analyzed page as hostile: it assumes the page
 knows the extension exists and may try to spoof or attack it. See the threat
 model in the project scope doc for the full list of mitigations already built
 in (Shadow DOM banner, no `innerHTML` on untrusted data, SSRF-safe proxy,
