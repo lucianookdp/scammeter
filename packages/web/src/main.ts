@@ -3,6 +3,7 @@ import {
   formatCnpj,
   parsePixPayload,
   validateCnpj,
+  type CnpjRecord,
   type ScoreResult,
   type ScoringInput,
 } from "@scammeter/core";
@@ -41,7 +42,7 @@ document.getElementById("chip-open-source")!.textContent = t("trust_open_source"
 document.getElementById("chip-no-tracking")!.textContent = t("trust_no_tracking");
 document.getElementById("chip-cnpj-pix")!.textContent = t("trust_cnpj_pix");
 document.getElementById("label-link")!.textContent = t("input_link");
-document.getElementById("label-advanced")!.textContent = t("label_advanced");
+document.getElementById("label-advanced-text")!.textContent = t("label_advanced");
 document.getElementById("label-cnpj")!.textContent = t("input_cnpj");
 document.getElementById("label-pix")!.textContent = t("input_pix");
 document.getElementById("submit-btn")!.textContent = t("button_verify");
@@ -61,6 +62,21 @@ const scoreEl = document.getElementById("score")!;
 const badgeEl = document.getElementById("badge")!;
 const captionEl = document.getElementById("gauge-caption")!;
 const reasonsEl = document.getElementById("reasons") as HTMLUListElement;
+const factsEl = document.getElementById("facts") as HTMLDivElement;
+const factCompanyEl = document.getElementById("fact-company") as HTMLParagraphElement;
+const factCompanyTextEl = document.getElementById("fact-company-text")!;
+const factDomainEl = document.getElementById("fact-domain") as HTMLParagraphElement;
+const factDomainTextEl = document.getElementById("fact-domain-text")!;
+const factRaEl = document.getElementById("fact-reclameaqui") as HTMLAnchorElement;
+const factRaTextEl = document.getElementById("fact-reclameaqui-text")!;
+
+const CNPJ_STATUS_LABEL: Record<string, string> = {
+  ativa: "ativa",
+  baixada: "baixada",
+  inapta: "inapta",
+  suspensa: "suspensa",
+  nula: "nula",
+};
 
 captionEl.textContent = t("gauge_idle");
 
@@ -100,6 +116,7 @@ function setLoading(isLoading: boolean) {
   if (isLoading) {
     captionEl.textContent = t("checking");
     reasonsEl.classList.remove("visible");
+    factsEl.hidden = true;
   }
 }
 
@@ -125,6 +142,41 @@ function renderResult(result: ScoreResult) {
     .join("");
   reasonsEl.hidden = result.signals.length === 0;
   requestAnimationFrame(() => reasonsEl.classList.add("visible"));
+}
+
+function formatAge(days: number): string {
+  if (days >= 365) {
+    const years = Math.floor(days / 365);
+    return years === 1 ? "1 ano" : `${years} anos`;
+  }
+  return days === 1 ? "1 dia" : `${days} dias`;
+}
+
+function renderFacts(
+  cnpjRecord: CnpjRecord | null | undefined,
+  storeCnpj: string | null | undefined,
+  domainAgeDays: number | null | undefined,
+  domain: string,
+) {
+  const hasCompany = Boolean(cnpjRecord?.razaoSocial && storeCnpj);
+  factCompanyEl.hidden = !hasCompany;
+  if (hasCompany && cnpjRecord && storeCnpj) {
+    const status = CNPJ_STATUS_LABEL[cnpjRecord.status] ?? cnpjRecord.status;
+    factCompanyTextEl.textContent = `${cnpjRecord.razaoSocial} · CNPJ ${formatCnpj(storeCnpj)} · situação ${status}`;
+  }
+
+  const hasDomainAge = typeof domainAgeDays === "number";
+  factDomainEl.hidden = !hasDomainAge;
+  if (hasDomainAge) {
+    factDomainTextEl.textContent = `Domínio registrado há ${formatAge(domainAgeDays as number)}`;
+  }
+
+  const searchTerm = cnpjRecord?.razaoSocial ?? domain;
+  factRaEl.href = `https://www.google.com/search?q=${encodeURIComponent(`${searchTerm} reclame aqui`)}`;
+  factRaTextEl.textContent = "Ver avaliações no Reclame Aqui";
+  factRaEl.hidden = false;
+
+  factsEl.hidden = false;
 }
 
 function showScanHint(key: string) {
@@ -200,4 +252,5 @@ form.addEventListener("submit", async (event) => {
 
   setLoading(false);
   renderResult(computeScore(input));
+  renderFacts(cnpjRecord, storeCnpj, domainInfo?.ageDays, domain);
 });
