@@ -1,0 +1,19 @@
+{
+  "name": "scammeter",
+  "private": true,
+  "packageManager": "pnpm@12.4.2",
+  "scripts": {
+    "test": "vitest run",
+    "build:core": "pnpm --filter @scammeter/core build",
+    "build:web": "pnpm build:core && pnpm --filter @scammeter/web build",
+    "build:extension": "pnpm build:core && pnpm --filter @scammeter/extension build",
+    "build:proxy": "pnpm build:core && pnpm --filter @scammeter/proxy build",
+    "dev:extension": "pnpm --filter @scammeter/extension dev",
+    "dev:web": "pnpm --filter @scammeter/web dev",
+    "dev:proxy": "pnpm --filter @scammeter/proxy dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}

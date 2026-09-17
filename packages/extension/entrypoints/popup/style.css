@@ -1,0 +1,94 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #666;
+  --border: #e5e5e5;
+  --green: #1e7d32;
+  --yellow: #8a5b00;
+  --red: #b3261e;
+  --gray: #666;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a;
+    --fg: #f0f0f0;
+    --muted: #a0a0a0;
+    --border: #2e2f31;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 320px;
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#app {
+  padding: 16px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+}
+
+.badge-baixo_risco {
+  background: var(--green);
+}
+.badge-atencao {
+  background: var(--yellow);
+}
+.badge-alto_risco {
+  background: var(--red);
+}
+.badge-nao_verificado {
+  background: var(--gray);
+}
+
+.summary {
+  margin: 10px 0;
+  font-weight: 500;
+}
+
+.reasons {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.reason {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.reason-alert::before {
+  content: "⚠ ";
+}
+.reason-ok::before {
+  content: "✓ ";
+  color: var(--green);
+}
+.reason-unverified::before {
+  content: "？ ";
+  color: var(--muted);
+}
+
+.footer,
+.loading,
+.empty {
+  color: var(--muted);
+  font-size: 12px;
+}

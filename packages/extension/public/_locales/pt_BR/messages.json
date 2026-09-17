@@ -1,0 +1,44 @@
+{
+  "extName": { "message": "Golpômetro" },
+  "extDescription": { "message": "Diz se uma loja online é golpe, e por quê." },
+
+  "badge_baixo_risco": { "message": "Baixo risco" },
+  "badge_atencao": { "message": "Atenção" },
+  "badge_alto_risco": { "message": "Alto risco" },
+  "badge_nao_verificado": { "message": "Não foi possível verificar" },
+
+  "summary_baixo_risco": { "message": "Nada de suspeito encontrado nesta loja." },
+  "summary_atencao": { "message": "Alguns sinais merecem atenção antes de comprar." },
+  "summary_alto_risco": { "message": "Vários sinais fortes de golpe nesta loja." },
+  "summary_nao_verificado": { "message": "Não conseguimos verificar esta loja agora." },
+
+  "reason_blocklist": { "message": "Este site está em uma lista de golpes conhecidos." },
+  "reason_pix_personal": { "message": "O Pix vai para uma pessoa, não para a empresa." },
+  "reason_pix_wrong_cnpj": { "message": "O Pix vai para outra empresa, diferente da loja." },
+  "reason_cnpj_inactive": { "message": "O CNPJ informado não está ativo." },
+  "reason_no_cnpj": { "message": "A loja não informa CNPJ, o que a lei exige." },
+  "reason_domain_new": { "message": "Este site foi criado há poucos dias." },
+  "reason_brand_lookalike": { "message": "O endereço parece imitar uma marca conhecida." },
+  "reason_cnae_mismatch": { "message": "A empresa é registrada com outra atividade." },
+  "reason_registrant_mismatch": { "message": "O site está registrado em outro nome." },
+  "reason_missing_address": { "message": "Falta o endereço da empresa." },
+  "reason_missing_return_policy": { "message": "Falta a política de troca." },
+  "reason_contact_only_whatsapp": { "message": "O único contato é WhatsApp ou e-mail gratuito." },
+  "reason_cheap_tld_private_whois": { "message": "Tipo de endereço comum em golpes." },
+  "reason_broken_social_links": { "message": "Os links de redes sociais não funcionam." },
+  "reason_tranco_top100k": { "message": "Site muito acessado." },
+  "reason_domain_established": { "message": "Empresa e site estão de acordo há anos." },
+  "reason_marketplace_notice": { "message": "Esta análise vale para o vendedor, não para a plataforma." },
+
+  "section_company": { "message": "Empresa" },
+  "section_site": { "message": "Site" },
+  "field_status": { "message": "Situação" },
+  "field_opened": { "message": "Abertura" },
+  "field_activity": { "message": "Atividade" },
+  "field_city": { "message": "Cidade" },
+  "field_domain_age": { "message": "Idade do domínio" },
+
+  "footer_disclaimer": { "message": "Esta é uma análise automática. Na dúvida, não pague." },
+  "popup_checking": { "message": "Analisando esta página…" },
+  "popup_no_page": { "message": "Abra uma loja online para ver a análise." }
+}

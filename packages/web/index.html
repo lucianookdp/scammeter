@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scammeter · Golpômetro</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <h1 id="brand">Scammeter</h1>
+      <p id="tagline"></p>
+
+      <form id="check-form">
+        <label>
+          <span id="label-link"></span>
+          <input id="input-link" type="url" required placeholder="https://" />
+        </label>
+        <label>
+          <span id="label-cnpj"></span>
+          <input id="input-cnpj" type="text" placeholder="00.000.000/0001-00" />
+        </label>
+        <label>
+          <span id="label-pix"></span>
+          <textarea id="input-pix" rows="2" placeholder="00020126..."></textarea>
+        </label>
+        <button type="submit" id="submit-btn"></button>
+      </form>
+
+      <section id="result" hidden></section>
+      <p id="install-note"></p>
+    </main>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

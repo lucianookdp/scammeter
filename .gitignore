@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.output/
+.wxt/
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+.claude/
