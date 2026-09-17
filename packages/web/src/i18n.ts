@@ -20,6 +20,7 @@ const pageStrings: Record<string, string> = {
   trust_open_source: "Código aberto",
   trust_no_tracking: "Sem rastreamento",
   trust_cnpj_pix: "Checagem de CNPJ e Pix",
+  footer_github: "Código aberto no GitHub",
 };
 
 export function t(key: string): string {
