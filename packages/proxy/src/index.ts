@@ -15,7 +15,16 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "")
   .filter(Boolean);
 
 await app.register(cors, {
-  origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+  // ponytail: any chrome-extension:// origin, not just one fixed ID — an
+  // unpacked dev install gets a random ID per machine. Tighten to the exact
+  // published extension ID once it's live on the Chrome Web Store.
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
+    if (origin.startsWith("chrome-extension://") || allowedOrigins.includes(origin)) {
+      return cb(null, true);
+    }
+    cb(null, false);
+  },
 });
 
 app.addHook("onRequest", async (req, reply) => {

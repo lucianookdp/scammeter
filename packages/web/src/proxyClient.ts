@@ -1,7 +1,6 @@
 import type { CnpjRecord } from "@scammeter/core";
 
-// TODO: replace with the real Railway URL after the first `railway up` deploy.
-const PROXY_URL = "https://scammeter-production.up.railway.app";
+const PROXY_URL = "https://scammeter-proxy-production.up.railway.app";
 
 async function getJson<T>(path: string, timeoutMs = 5000): Promise<T | null> {
   const controller = new AbortController();
