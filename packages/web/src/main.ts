@@ -193,7 +193,10 @@ form.addEventListener("submit", async (event) => {
   let link: string;
   let domain: string;
   try {
-    link = linkInput.value.trim();
+    const raw = linkInput.value.trim();
+    // Most people paste a bare domain ("mercadolivre.com.br") or a WhatsApp
+    // link with no scheme — treat that as https, don't reject it.
+    link = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
     domain = new URL(link).hostname;
   } catch {
     linkError.textContent = t("error_invalid_url");
