@@ -9,6 +9,7 @@ import {
 } from "@scammeter/core";
 import { t } from "./i18n";
 import { getTheme, setTheme } from "./theme";
+import { parseSiteUrl } from "./url";
 import { fetchCnpjRecord, fetchDomainInfo, fetchReputation, fetchScan } from "./proxyClient";
 
 // Lucide icons (ISC license), inlined as static markup — no icon-font/JS dependency needed.
@@ -193,11 +194,9 @@ form.addEventListener("submit", async (event) => {
   let link: string;
   let domain: string;
   try {
-    const raw = linkInput.value.trim();
-    // Most people paste a bare domain ("mercadolivre.com.br") or a WhatsApp
-    // link with no scheme — treat that as https, don't reject it.
-    link = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
-    domain = new URL(link).hostname;
+    const parsed = parseSiteUrl(linkInput.value);
+    link = parsed.toString();
+    domain = parsed.hostname;
   } catch {
     linkError.textContent = t("error_invalid_url");
     linkError.hidden = false;
