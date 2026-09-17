@@ -1,6 +1,6 @@
 {
   "extName": { "message": "Scammeter" },
-  "extDescription": { "message": "Tells you if an online store is a scam, and why." },
+  "extDescription": { "message": "Tells you if a Brazilian site is a scam, and why." },
 
   "badge_baixo_risco": { "message": "Low risk" },
   "badge_atencao": { "message": "Caution" },
@@ -8,15 +8,15 @@
   "badge_nao_verificado": { "message": "Could not verify" },
 
   "summary_baixo_risco": { "message": "No risk signals found so far." },
-  "summary_atencao": { "message": "A few signals deserve attention before you buy." },
-  "summary_alto_risco": { "message": "Several strong scam signals on this store." },
-  "summary_nao_verificado": { "message": "We couldn't verify this store right now." },
+  "summary_atencao": { "message": "A few signals deserve attention before you continue." },
+  "summary_alto_risco": { "message": "Several strong scam signals on this site." },
+  "summary_nao_verificado": { "message": "We couldn't verify this site right now." },
 
   "reason_blocklist": { "message": "This site is on a known-scam list." },
   "reason_pix_personal": { "message": "The payment goes to a person, not the company." },
-  "reason_pix_wrong_cnpj": { "message": "The payment goes to a different company than the store." },
+  "reason_pix_wrong_cnpj": { "message": "The payment goes to a different company than the one on the site." },
   "reason_cnpj_inactive": { "message": "The company's tax ID is not active." },
-  "reason_no_cnpj": { "message": "The store doesn't show a tax ID, which the law requires." },
+  "reason_no_cnpj": { "message": "The site doesn't show a tax ID." },
   "reason_domain_new": { "message": "This site was created only days ago." },
   "reason_brand_lookalike": { "message": "The address looks like it's imitating a known brand." },
   "reason_cnae_mismatch": { "message": "The company is registered under a different business activity." },
@@ -40,5 +40,5 @@
 
   "footer_disclaimer": { "message": "This is an automated analysis. When in doubt, don't pay." },
   "popup_checking": { "message": "Analyzing this page…" },
-  "popup_no_page": { "message": "Open an online store to see the analysis." }
+  "popup_no_page": { "message": "Open a site to see the analysis." }
 }
