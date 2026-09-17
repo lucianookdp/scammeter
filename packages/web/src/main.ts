@@ -38,7 +38,6 @@ document.getElementById("label-advanced")!.textContent = t("label_advanced");
 document.getElementById("label-cnpj")!.textContent = t("input_cnpj");
 document.getElementById("label-pix")!.textContent = t("input_pix");
 document.getElementById("submit-btn")!.textContent = t("button_verify");
-document.getElementById("install-note")!.textContent = t("install_extension");
 document.getElementById("footer-note")!.textContent = t("footer_disclaimer");
 
 const form = document.getElementById("check-form") as HTMLFormElement;

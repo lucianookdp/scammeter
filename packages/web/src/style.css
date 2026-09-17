@@ -466,24 +466,6 @@ button:disabled {
   margin: 18px 0 0;
 }
 
-.install-note {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 8px;
-}
-.install-note .icon-puzzle {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  margin-top: 2px;
-  fill: none;
-  stroke: var(--ink-muted);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .needle-group,
   .zone,
