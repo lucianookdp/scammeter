@@ -61,6 +61,39 @@ body {
   max-width: 30rem;
 }
 
+/* Larger screens get a two-column layout instead of a scaled-up mobile page:
+   a sticky intro panel beside the actual tool, so the extra width is used
+   for something rather than just wider margins. */
+@media (min-width: 900px) {
+  body {
+    padding: 9vh 40px 60px;
+    align-items: flex-start;
+  }
+  #app {
+    max-width: 64rem;
+    display: grid;
+    grid-template-columns: minmax(260px, 21rem) minmax(0, 30rem);
+    column-gap: 56px;
+    grid-template-areas:
+      "intro card"
+      "intro footer";
+  }
+  .intro {
+    grid-area: intro;
+    position: sticky;
+    top: 9vh;
+  }
+  .card {
+    grid-area: card;
+  }
+  #footer-note {
+    grid-area: footer;
+  }
+  #tagline {
+    font-size: 1rem;
+  }
+}
+
 .brand {
   display: flex;
   align-items: center;
