@@ -7,7 +7,7 @@
   "badge_alto_risco": { "message": "Alto risco" },
   "badge_nao_verificado": { "message": "Não foi possível verificar" },
 
-  "summary_baixo_risco": { "message": "Nada de suspeito encontrado nesta loja." },
+  "summary_baixo_risco": { "message": "Nenhum sinal de risco encontrado até agora." },
   "summary_atencao": { "message": "Alguns sinais merecem atenção antes de comprar." },
   "summary_alto_risco": { "message": "Vários sinais fortes de golpe nesta loja." },
   "summary_nao_verificado": { "message": "Não conseguimos verificar esta loja agora." },

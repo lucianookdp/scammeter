@@ -59,47 +59,78 @@
 
       <p id="tagline"></p>
 
-      <section class="gauge-panel">
-        <svg class="gauge idle" viewBox="0 0 200 112" role="img" aria-label="Medidor de risco">
-          <path class="zone zone-low" d="M20,100 A80,80 0 0 1 33.9,54.92" />
-          <path class="zone zone-mid" d="M33.9,54.92 A80,80 0 0 1 97.49,20.04" />
-          <path class="zone zone-high" d="M97.49,20.04 A80,80 0 0 1 180,100" />
-          <g class="needle-group">
-            <line class="needle" x1="100" y1="100" x2="100" y2="32" />
-          </g>
-          <circle class="hub-ring" cx="100" cy="100" r="8" />
-          <circle class="hub" cx="100" cy="100" r="3.5" />
-        </svg>
-        <div class="readout">
-          <span id="score" class="score">—</span>
-          <span id="badge" class="badge"></span>
-        </div>
-        <p id="gauge-caption" class="gauge-caption" aria-live="polite"></p>
-      </section>
+      <ul class="trust-chips">
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 16 4-4-4-4" /><path d="m6 8-4 4 4 4" /><path d="m14.5 4-5 16" /></svg>
+          <span id="chip-open-source"></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+            />
+            <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+            <path
+              d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+            />
+            <path d="m2 2 20 20" />
+          </svg>
+          <span id="chip-no-tracking"></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+            />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <span id="chip-cnpj-pix"></span>
+        </li>
+      </ul>
 
-      <form id="check-form" novalidate>
-        <label class="field">
-          <span id="label-link"></span>
-          <input id="input-link" type="url" required placeholder="https://" autocomplete="url" />
-          <span id="link-error" class="field-error" hidden></span>
-        </label>
+      <div class="card">
+        <section class="gauge-panel">
+          <svg class="gauge idle" viewBox="0 0 200 112" role="img" aria-label="Medidor de risco">
+            <path class="zone zone-low" d="M20,100 A80,80 0 0 1 33.9,54.92" />
+            <path class="zone zone-mid" d="M33.9,54.92 A80,80 0 0 1 97.49,20.04" />
+            <path class="zone zone-high" d="M97.49,20.04 A80,80 0 0 1 180,100" />
+            <g class="needle-group">
+              <line class="needle" x1="100" y1="100" x2="100" y2="32" />
+            </g>
+            <circle class="hub-ring" cx="100" cy="100" r="8" />
+            <circle class="hub" cx="100" cy="100" r="3.5" />
+          </svg>
+          <div class="readout">
+            <span id="score" class="score">—</span>
+            <span id="badge" class="badge"></span>
+          </div>
+          <p id="gauge-caption" class="gauge-caption" aria-live="polite"></p>
+        </section>
 
-        <details id="advanced">
-          <summary id="label-advanced"></summary>
+        <form id="check-form" novalidate>
           <label class="field">
-            <span id="label-cnpj"></span>
-            <input id="input-cnpj" type="text" placeholder="00.000.000/0001-00" />
+            <span id="label-link"></span>
+            <input id="input-link" type="url" required placeholder="https://" autocomplete="url" />
+            <span id="link-error" class="field-error" hidden></span>
           </label>
-          <label class="field">
-            <span id="label-pix"></span>
-            <textarea id="input-pix" rows="2" placeholder="00020126..."></textarea>
-          </label>
-        </details>
 
-        <button type="submit" id="submit-btn"></button>
-      </form>
+          <details id="advanced">
+            <summary id="label-advanced"></summary>
+            <label class="field">
+              <span id="label-cnpj"></span>
+              <input id="input-cnpj" type="text" placeholder="00.000.000/0001-00" />
+            </label>
+            <label class="field">
+              <span id="label-pix"></span>
+              <textarea id="input-pix" rows="2" placeholder="00020126..."></textarea>
+            </label>
+          </details>
 
-      <ul id="reasons" class="reasons" hidden></ul>
+          <button type="submit" id="submit-btn"></button>
+        </form>
+
+        <ul id="reasons" class="reasons" hidden></ul>
+      </div>
 
       <p id="footer-note" class="footnote"></p>
       <p class="footnote install-note">
