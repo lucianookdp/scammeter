@@ -364,6 +364,11 @@ summary:focus-visible {
   font-size: 0.8125rem;
 }
 
+.field-hint {
+  color: var(--ink-muted);
+  font-size: 0.8125rem;
+}
+
 button[type="submit"] {
   font: inherit;
   font-weight: 600;

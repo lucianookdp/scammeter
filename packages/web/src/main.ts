@@ -1,7 +1,14 @@
-import { computeScore, parsePixPayload, validateCnpj, type ScoreResult, type ScoringInput } from "@scammeter/core";
+import {
+  computeScore,
+  formatCnpj,
+  parsePixPayload,
+  validateCnpj,
+  type ScoreResult,
+  type ScoringInput,
+} from "@scammeter/core";
 import { t } from "./i18n";
 import { getTheme, setTheme } from "./theme";
-import { fetchCnpjRecord, fetchDomainInfo, fetchReputation } from "./proxyClient";
+import { fetchCnpjRecord, fetchDomainInfo, fetchReputation, fetchScan } from "./proxyClient";
 
 // Lucide icons (ISC license), inlined as static markup — no icon-font/JS dependency needed.
 const ICONS = {
@@ -44,6 +51,10 @@ const form = document.getElementById("check-form") as HTMLFormElement;
 const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
 const linkInput = document.getElementById("input-link") as HTMLInputElement;
 const linkError = document.getElementById("link-error") as HTMLSpanElement;
+const cnpjInput = document.getElementById("input-cnpj") as HTMLInputElement;
+const pixInput = document.getElementById("input-pix") as HTMLTextAreaElement;
+const advanced = document.getElementById("advanced") as HTMLDetailsElement;
+const scanHint = document.getElementById("scan-hint") as HTMLSpanElement;
 const gauge = document.querySelector(".gauge") as HTMLElement;
 const needleGroup = document.querySelector(".needle-group") as HTMLElement;
 const scoreEl = document.getElementById("score")!;
@@ -115,13 +126,22 @@ function renderResult(result: ScoreResult) {
   requestAnimationFrame(() => reasonsEl.classList.add("visible"));
 }
 
+function showScanHint(key: string) {
+  scanHint.textContent = t(key);
+  scanHint.hidden = false;
+  advanced.open = true;
+}
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   linkError.hidden = true;
+  scanHint.hidden = true;
 
+  let link: string;
   let domain: string;
   try {
-    domain = new URL(linkInput.value.trim()).hostname;
+    link = linkInput.value.trim();
+    domain = new URL(link).hostname;
   } catch {
     linkError.textContent = t("error_invalid_url");
     linkError.hidden = false;
@@ -130,16 +150,37 @@ form.addEventListener("submit", async (event) => {
 
   setLoading(true);
 
-  const cnpjValue = (document.getElementById("input-cnpj") as HTMLInputElement).value.trim();
-  const pixValue = (document.getElementById("input-pix") as HTMLTextAreaElement).value.trim();
-  const storeCnpj = cnpjValue ? (validateCnpj(cnpjValue) ? cnpjValue : null) : undefined;
-  const parsedPix = pixValue ? parsePixPayload(pixValue) : null;
+  const cnpjValue = cnpjInput.value.trim();
+  const pixValue = pixInput.value.trim();
+  // Nobody knows a company's CNPJ by heart — try to find it (and a Pix code,
+  // if one's sitting on the page) on the site itself before asking the user.
+  const needsScan = !cnpjValue || !pixValue;
 
-  const [cnpjRecord, domainInfo, reputation] = await Promise.all([
-    storeCnpj ? fetchCnpjRecord(storeCnpj) : Promise.resolve(undefined),
+  const [scan, domainInfo, reputation] = await Promise.all([
+    needsScan ? fetchScan(link) : Promise.resolve(null),
     fetchDomainInfo(domain),
     fetchReputation(domain),
   ]);
+
+  let storeCnpj: string | null | undefined = cnpjValue ? (validateCnpj(cnpjValue) ? cnpjValue : null) : undefined;
+  if (!cnpjValue) {
+    if (scan?.fetched) {
+      storeCnpj = scan.cnpj;
+      if (scan.cnpj) {
+        cnpjInput.value = formatCnpj(scan.cnpj);
+        advanced.open = true;
+      } else {
+        showScanHint("scan_no_cnpj");
+      }
+    } else {
+      showScanHint("scan_unreachable");
+    }
+  }
+
+  const pixPayload = pixValue || scan?.pixPayload || "";
+  const parsedPix = pixPayload ? parsePixPayload(pixPayload) : null;
+
+  const cnpjRecord = storeCnpj ? await fetchCnpjRecord(storeCnpj) : undefined;
 
   const input: ScoringInput = {
     siteBlocklisted: reputation?.blocklisted ?? undefined,

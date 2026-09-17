@@ -4,6 +4,7 @@ import { isRateLimited } from "./rateLimit.js";
 import { registerCnpjRoute } from "./routes/cnpj.js";
 import { registerDomainRoute } from "./routes/domain.js";
 import { registerReputationRoute } from "./routes/reputation.js";
+import { registerScanRoute } from "./routes/scan.js";
 
 const app = Fastify({ logger: true, trustProxy: true });
 
@@ -38,6 +39,7 @@ app.get("/", async () => ({ status: "ok", service: "scammeter-proxy" }));
 registerCnpjRoute(app);
 registerDomainRoute(app);
 registerReputationRoute(app);
+registerScanRoute(app);
 
 const port = Number(process.env.PORT ?? 8787);
 app.listen({ port, host: "0.0.0.0" }).catch((err) => {
