@@ -1,20 +1,29 @@
 # Scammeter
 
-Extensão de navegador e página web que dizem se um site brasileiro é golpe, e por quê. Cruza o CNPJ da empresa com o domínio e, quando existe, com a chave Pix. Funciona para qualquer site, não só lojas: página de investimento falsa, phishing e outras fachadas também são só um domínio e uma chave Pix.
+A browser extension and a web page that tell you whether a Brazilian site is a
+scam, and why. It cross-checks the company registration found on the page
+against the domain and, when there is one, against the Pix key. It works for
+any site, not only shops: a fake investment page, phishing and other fronts are
+also just a domain and a payment key.
 
 Site: https://lucianookdp.github.io/scammeter/
 
-## Como funciona
+## How it works
 
-Três camadas de sinais alimentam o mesmo motor de pontuação (`packages/core`):
+Three layers of signals feed the same scoring engine (`packages/core`):
 
-1. Reputação: listas de ameaças conhecidas (Safe Browsing, URLhaus, PhishTank, OpenPhish) e o ranking Tranco.
-2. Saúde técnica: idade do domínio via RDAP, certificado SSL, cadeia de redirecionamentos, TLD barato com WHOIS privado.
-3. Coerência do site: CNPJ encontrado na página cruzado com sua situação cadastral e a idade do próprio domínio, e a chave Pix comparada com esse CNPJ.
+1. Reputation: known threat lists (Safe Browsing, URLhaus, PhishTank,
+   OpenPhish) and the Tranco ranking.
+2. Technical health: domain age via RDAP, SSL certificate, redirect chain,
+   cheap TLD with private WHOIS.
+3. Site coherence: the company registration found on the page, checked against
+   its official status and against the age of the domain itself, and the Pix
+   key compared with that same company.
 
-Cada regra gera um motivo em linguagem simples. O usuário sempre vê o motivo, não só a nota.
+Every rule produces a reason in plain language. The user always sees the
+reason, not just the score.
 
-## Rodando
+## Running
 
 ```bash
 corepack enable
@@ -24,22 +33,25 @@ pnpm dev:web
 pnpm dev:proxy
 ```
 
-O proxy local sobe em `:8787` e a página web já aponta pra ele em desenvolvimento.
+The local proxy listens on `:8787` and the web page already points at it in
+development.
 
-## Estrutura
+## Structure
 
 ```
 packages/
-  core/       motor de pontuação, CNPJ e Pix (BR Code), sem dependência de navegador
-  web/        página "cole o link", publicada no GitHub Pages
-  proxy/      API em Fastify que guarda as chaves, publicada no Railway
-  extension/  extensão Manifest V3 (WXT), ainda não publicada
+  core/       scoring engine, company registration and Pix (BR Code), no browser dependency
+  web/        the "paste a link" page, published on GitHub Pages
+  proxy/      API holding the keys, published on Railway
+  extension/  Manifest V3 extension (WXT), not published yet
 ```
 
 ## Deploy
 
-GitHub Pages para a página web, pelo workflow em `.github/workflows/deploy-web.yml`, a cada push na `main`. O proxy fica no Railway, publicado manualmente com `railway up`.
+GitHub Pages for the web page, through the workflow in
+`.github/workflows/deploy-web.yml`, on every push to `main`. The proxy lives on
+Railway and is published manually with `railway up`.
 
-## Licença
+## License
 
 MIT.
