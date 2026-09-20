@@ -8,20 +8,41 @@ also just a domain and a payment key.
 
 Site: https://lucianookdp.github.io/scammeter/
 
-## How it works
+## How the score works
 
-Three layers of signals feed the same scoring engine (`packages/core`):
+The score counts evidence of a scam. It does not count the absence of
+evidence: a site that simply doesn't publish a company registration is not
+penalised for it, because most of the web has no reason to publish one. That
+absence only becomes a risk when the page is asking for a Pix payment — not
+knowing who receives the money is then the whole problem.
 
-1. Reputation: known threat lists (Safe Browsing, URLhaus, PhishTank,
-   OpenPhish) and the Tranco ranking.
-2. Technical health: domain age via RDAP, SSL certificate, redirect chain,
-   cheap TLD with private WHOIS.
-3. Site coherence: the company registration found on the page, checked against
-   its official status and against the age of the domain itself, and the Pix
-   key compared with that same company.
+Signals that clear a site are worth points too, so a domain registered twenty
+years ago offsets smaller doubts. And "low risk" requires that something was
+in fact checked: when every lookup comes back empty the verdict is "could not
+verify", never a green light.
 
-Every rule produces a reason in plain language. The user always sees the
-reason, not just the score.
+Every rule produces a reason in plain language, including the ones that
+passed. The user always sees why the number is what it is.
+
+## Signals
+
+Live today:
+
+- Domain age via RDAP, and whether the domain is old enough to vouch for itself.
+- The company registration found on the page, checked against its official
+  status with the federal revenue service.
+- The Pix key: whether it pays a person instead of a company, and whether it
+  pays a different company than the one named on the site.
+- A known brand's name worn by a domain that isn't that brand's.
+- Registries that scams cluster on (`.shop`, `.xyz`, and the rest).
+
+Planned, and currently inert:
+
+- Threat lists (Safe Browsing, URLhaus, PhishTank, OpenPhish) and the Tranco
+  ranking. `/reputation` is a stub that reports "unverified" rather than a
+  fabricated "clean", so nothing is scored on data we don't have.
+- Page coherence: missing address, missing return policy, contact only through
+  WhatsApp, broken social links, registrant and business-activity mismatches.
 
 ## Running
 
