@@ -26,7 +26,7 @@
   "reason_missing_address": { "message": "Falta o endereço da empresa." },
   "reason_missing_return_policy": { "message": "Falta a política de troca." },
   "reason_contact_only_whatsapp": { "message": "O único contato é WhatsApp ou e-mail gratuito." },
-  "reason_cheap_tld_private_whois": { "message": "Tipo de endereço comum em golpes." },
+  "reason_cheap_tld_private_whois": { "message": "Este tipo de endereço (.shop, .xyz) é comum em golpes." },
   "reason_broken_social_links": { "message": "Os links de redes sociais não funcionam." },
   "reason_tranco_top100k": { "message": "Site muito acessado." },
   "reason_domain_established": { "message": "Domínio registrado há mais de cinco anos." },

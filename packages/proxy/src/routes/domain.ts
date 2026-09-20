@@ -1,4 +1,7 @@
 import type { FastifyInstance } from "fastify";
+// RDAP only answers for registered domains, so "www.facebook.com" — which is
+// what people actually paste — returns nothing. Strip down first.
+import { registrableDomain } from "@scammeter/core";
 import { TtlCache } from "../cache.js";
 import { PROXY_USER_AGENT } from "../userAgent.js";
 
@@ -12,23 +15,6 @@ const cache = new TtlCache<DomainInfo>(6 * 60 * 60_000); // 6h
 // Bounded hostname shape only — this is the one thing standing between an
 // attacker and making our server fetch an arbitrary URL (SSRF).
 const HOSTNAME_PATTERN = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i;
-
-// RDAP only answers for registered domains, so "www.facebook.com" — which is
-// what people actually paste — returns nothing. Strip down to the registrable
-// domain first.
-// ponytail: label heuristic, not the Public Suffix List. Covers .com.br and
-// friends; swap in the PSL if an exotic suffix ever shows up wrong.
-const MULTI_LABEL_SLDS = new Set([
-  "com", "net", "org", "gov", "edu", "mil", "int", "co", "ind", "esp",
-  "adv", "art", "eco", "emp", "etc", "far", "inf", "rec", "srv", "tur", "tv",
-]);
-
-export function registrableDomain(hostname: string): string {
-  const labels = hostname.replace(/^www\./, "").split(".");
-  if (labels.length <= 2) return labels.join(".");
-  const sld = labels[labels.length - 2];
-  return labels.slice(MULTI_LABEL_SLDS.has(sld) ? -3 : -2).join(".");
-}
 
 function rdapUrlFor(domain: string): string {
   return domain.endsWith(".br")
