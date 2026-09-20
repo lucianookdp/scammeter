@@ -41,8 +41,19 @@ export interface ScoreResult {
   signals: Signal[];
 }
 
+/**
+ * A usable age, or null. A registry can report a registration date in the
+ * future (clock skew, a bad parse), and `-5 < 30` would otherwise read as
+ * "created days ago" — inventing an alert out of broken data.
+ */
+function usableAgeDays(days: number | null | undefined): number | null {
+  if (typeof days !== "number" || !Number.isFinite(days) || days < 0) return null;
+  return days;
+}
+
 export function computeScore(input: ScoringInput): ScoreResult {
   const signals: Signal[] = [];
+  const domainAgeDays = usableAgeDays(input.domainAgeDays);
   let score = 0;
 
   const add = (key: string, points: number, reasonKey: string, status: CheckStatus = "alert") => {
@@ -74,7 +85,7 @@ export function computeScore(input: ScoringInput): ScoreResult {
     else add("no_cnpj", 0, "reason.no_cnpj", "unverified");
   }
 
-  if (typeof input.domainAgeDays === "number" && input.domainAgeDays < 30) {
+  if (domainAgeDays !== null && domainAgeDays < 30) {
     add("domain_new", 25, "reason.domain_new");
   }
   if (input.domainImitatesBrand) add("brand_lookalike", 30, "reason.brand_lookalike");
@@ -90,9 +101,9 @@ export function computeScore(input: ScoringInput): ScoreResult {
 
   // Domain age stands on its own. Gating it on an active CNPJ meant no site
   // without a published CNPJ could ever earn credit for being 20 years old.
-  if (typeof input.domainAgeDays === "number") {
-    if (input.domainAgeDays > 5 * 365) add("domain_established", -25, "reason.domain_established", "ok");
-    else if (input.domainAgeDays > 2 * 365) add("domain_mature", -10, "reason.domain_mature", "ok");
+  if (domainAgeDays !== null) {
+    if (domainAgeDays > 5 * 365) add("domain_established", -25, "reason.domain_established", "ok");
+    else if (domainAgeDays > 2 * 365) add("domain_mature", -10, "reason.domain_mature", "ok");
   }
   if (input.cnpjRecord?.status === "ativa") add("cnpj_active", 0, "reason.cnpj_active", "ok");
 
@@ -100,8 +111,7 @@ export function computeScore(input: ScoringInput): ScoreResult {
 
   // "Low risk" has to mean something was actually checked. If every lookup came
   // back empty, a score of 0 is ignorance, not a clean bill of health.
-  const verifiedSomething =
-    typeof input.domainAgeDays === "number" || input.cnpjRecord != null || input.siteBlocklisted != null;
+  const verifiedSomething = domainAgeDays !== null || input.cnpjRecord != null || input.siteBlocklisted != null;
 
   let verdict: Verdict;
   if (input.siteBlocklisted) verdict = "alto_risco";
