@@ -64,7 +64,16 @@ export function computeScore(input: ScoringInput): ScoreResult {
   if (input.cnpjRecord && input.cnpjRecord.status !== "ativa") {
     add("cnpj_inactive", 45, "reason.cnpj_inactive");
   }
-  if (input.storeCnpj === null) add("no_cnpj", 30, "reason.no_cnpj");
+
+  // Most sites on the web have no reason to publish a CNPJ — a foreign site, a
+  // news page, a social network. Its absence is missing information, not a red
+  // flag. It only becomes one when the page is asking you for money: then not
+  // knowing who receives it is the whole problem.
+  if (input.storeCnpj === null) {
+    if (input.pix) add("no_cnpj_with_payment", 25, "reason.no_cnpj_with_payment");
+    else add("no_cnpj", 0, "reason.no_cnpj", "unverified");
+  }
+
   if (typeof input.domainAgeDays === "number" && input.domainAgeDays < 30) {
     add("domain_new", 25, "reason.domain_new");
   }
@@ -78,26 +87,28 @@ export function computeScore(input: ScoringInput): ScoreResult {
   if (input.brokenSocialLinks) add("broken_social_links", 5, "reason.broken_social_links");
 
   if (input.domainRankTop100k) add("tranco_top100k", -40, "reason.tranco_top100k", "ok");
-  if (
-    typeof input.domainAgeDays === "number" &&
-    input.domainAgeDays > 5 * 365 &&
-    input.cnpjRecord?.status === "ativa"
-  ) {
-    add("domain_established", -25, "reason.domain_established", "ok");
+
+  // Domain age stands on its own. Gating it on an active CNPJ meant no site
+  // without a published CNPJ could ever earn credit for being 20 years old.
+  if (typeof input.domainAgeDays === "number") {
+    if (input.domainAgeDays > 5 * 365) add("domain_established", -25, "reason.domain_established", "ok");
+    else if (input.domainAgeDays > 2 * 365) add("domain_mature", -10, "reason.domain_mature", "ok");
   }
+  if (input.cnpjRecord?.status === "ativa") add("cnpj_active", 0, "reason.cnpj_active", "ok");
 
   score = Math.max(0, Math.min(100, score));
 
-  const cnpjUnverified = input.storeCnpj != null && input.cnpjRecord === null;
-  const domainUnverified = input.domainAgeDays === null;
-  const insufficientData = !input.siteBlocklisted && cnpjUnverified && domainUnverified;
+  // "Low risk" has to mean something was actually checked. If every lookup came
+  // back empty, a score of 0 is ignorance, not a clean bill of health.
+  const verifiedSomething =
+    typeof input.domainAgeDays === "number" || input.cnpjRecord != null || input.siteBlocklisted != null;
 
   let verdict: Verdict;
   if (input.siteBlocklisted) verdict = "alto_risco";
-  else if (insufficientData) verdict = "nao_verificado";
   else if (score >= 50) verdict = "alto_risco";
   else if (score >= 20) verdict = "atencao";
-  else verdict = "baixo_risco";
+  else if (verifiedSomething) verdict = "baixo_risco";
+  else verdict = "nao_verificado";
 
   if (input.isMarketplace) {
     signals.unshift({ key: "marketplace_notice", points: 0, reasonKey: "reason.marketplace_notice", status: "ok" });
