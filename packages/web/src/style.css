@@ -136,9 +136,28 @@ body {
   #check-form {
     grid-column: 2;
   }
-  .reasons,
-  .facts {
+  /* Results and the failure banner run the full width of the card — squeezed
+     into the gauge column, the checks table wraps into ribbons. */
+  .results,
+  .alertbar {
     grid-column: 1 / -1;
+  }
+
+  /* With room to spare, the signals and the checks sit side by side. */
+  .results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 32px;
+    align-items: start;
+  }
+  #group-checks,
+  #fact-reclameaqui {
+    grid-column: 2;
+  }
+  #group-alert,
+  #group-ok,
+  #group-unverified {
+    grid-column: 1;
   }
 }
 
@@ -577,22 +596,43 @@ button:disabled {
   margin-top: 12px;
 }
 
-/* Reasons */
+/* Results — grouped signals, then the checks the verdict was built from */
 
-.reasons {
-  list-style: none;
-  margin: 28px 0 0;
-  padding: 0;
-  border-top: 1px solid var(--border);
+.results {
   opacity: 0;
   transform: translateY(4px);
   transition:
     opacity 350ms ease,
     transform 350ms ease;
 }
-.reasons.visible {
+.results.visible {
   opacity: 1;
   transform: none;
+}
+
+.group {
+  margin-top: 24px;
+}
+.group-title {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.group-title-alert {
+  color: var(--amber);
+}
+.group-title-ok {
+  color: var(--green);
+}
+
+.reasons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
 }
 .reasons li {
   padding: 10px 0;
@@ -621,19 +661,69 @@ button:disabled {
 .reason-unverified svg {
   stroke: var(--ink-muted);
 }
-
-/* Facts — supporting company/domain info, shown even with no risk signals */
-
-.facts {
-  margin: 20px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* The weight, so the total is arithmetic the reader can follow. */
+.reason-weight {
+  flex-shrink: 0;
+  min-width: 2.5em;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--amber);
+  text-align: right;
+  margin-top: 1px;
 }
-.fact {
+
+/* Checks — every lookup and what it returned, including the empty ones */
+
+.checks {
   margin: 0;
+  border-top: 1px solid var(--border);
+}
+/* Label above value. Side by side they get about a hundred pixels each inside
+   the two-column results grid, and every value wraps into a ribbon. */
+.checks dt {
+  margin: 0;
+  padding: 9px 0 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.checks dd {
+  margin: 0;
+  padding: 1px 0 9px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+.check-value {
+  color: var(--ink-muted);
+}
+.check-ok {
+  color: var(--ink);
+}
+.check-alert {
+  color: var(--amber);
+}
+
+/* A failed lookup has to look different from a clean result. */
+.alertbar {
+  margin: 20px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  border: 1px solid var(--border);
+  color: var(--ink-muted);
+}
+.alertbar-warn {
+  border-color: color-mix(in srgb, var(--amber) 45%, transparent);
+  color: var(--amber);
+}
+
+.fact {
+  margin: 20px 0 0;
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -692,7 +782,7 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   .needle-group,
   .zone,
-  .reasons,
+  .results,
   .gauge.loading {
     transition: none !important;
     animation: none !important;
