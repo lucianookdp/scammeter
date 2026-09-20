@@ -10,13 +10,28 @@ describe("computeScore", () => {
     expect(result.verdict).toBe("alto_risco");
   });
 
-  it("insufficient data yields nao_verificado, never baixo_risco", () => {
+  it("no data at all yields nao_verificado, never baixo_risco", () => {
     const result = computeScore({
       storeCnpj: "11222333000181",
       cnpjRecord: null,
       domainAgeDays: null,
     });
     expect(result.verdict).toBe("nao_verificado");
+  });
+
+  it("a well-known site without a CNPJ is low risk, not atencao", () => {
+    // The bug this guards: a 20-year-old domain that simply has no reason to
+    // publish a CNPJ used to score 30 and come back yellow.
+    const result = computeScore({ storeCnpj: null, domainAgeDays: 20 * 365 });
+    expect(result.score).toBe(0);
+    expect(result.verdict).toBe("baixo_risco");
+    expect(result.signals.find((s) => s.key === "no_cnpj")?.status).toBe("unverified");
+  });
+
+  it("a missing CNPJ does count against a page that asks for Pix", () => {
+    const result = computeScore({ storeCnpj: null, pix: { keyType: "random" }, domainAgeDays: 400 });
+    expect(result.signals.some((s) => s.key === "no_cnpj_with_payment")).toBe(true);
+    expect(result.verdict).toBe("atencao");
   });
 
   it("Pix to a personal key is a strong signal", () => {
@@ -31,15 +46,15 @@ describe("computeScore", () => {
     expect(result.signals.some((s) => s.key === "pix_personal")).toBe(true);
   });
 
-  it("an established, popular, CNPJ-coherent site scores low risk", () => {
+  it("an established, CNPJ-coherent site scores low risk", () => {
     const result = computeScore({
       storeCnpj: "11222333000181",
       cnpjRecord: { status: "ativa" },
       domainAgeDays: 3000,
-      domainRankTop100k: true,
     });
     expect(result.score).toBe(0);
     expect(result.verdict).toBe("baixo_risco");
+    expect(result.signals.some((s) => s.key === "cnpj_active")).toBe(true);
   });
 
   it("clamps the score at 100 even with overlapping high-weight signals", () => {

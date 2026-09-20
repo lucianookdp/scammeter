@@ -13,6 +13,23 @@ const cache = new TtlCache<DomainInfo>(6 * 60 * 60_000); // 6h
 // attacker and making our server fetch an arbitrary URL (SSRF).
 const HOSTNAME_PATTERN = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i;
 
+// RDAP only answers for registered domains, so "www.facebook.com" — which is
+// what people actually paste — returns nothing. Strip down to the registrable
+// domain first.
+// ponytail: label heuristic, not the Public Suffix List. Covers .com.br and
+// friends; swap in the PSL if an exotic suffix ever shows up wrong.
+const MULTI_LABEL_SLDS = new Set([
+  "com", "net", "org", "gov", "edu", "mil", "int", "co", "ind", "esp",
+  "adv", "art", "eco", "emp", "etc", "far", "inf", "rec", "srv", "tur", "tv",
+]);
+
+export function registrableDomain(hostname: string): string {
+  const labels = hostname.replace(/^www\./, "").split(".");
+  if (labels.length <= 2) return labels.join(".");
+  const sld = labels[labels.length - 2];
+  return labels.slice(MULTI_LABEL_SLDS.has(sld) ? -3 : -2).join(".");
+}
+
 function rdapUrlFor(domain: string): string {
   return domain.endsWith(".br")
     ? `https://rdap.registro.br/domain/${domain}`
@@ -25,10 +42,11 @@ function extractRegistrationEvent(events: Array<{ eventAction?: string; eventDat
 
 export function registerDomainRoute(app: FastifyInstance) {
   app.get<{ Params: { domain: string } }>("/domain/:domain", async (req, reply) => {
-    const domain = req.params.domain.toLowerCase();
-    if (!HOSTNAME_PATTERN.test(domain)) {
+    const hostname = req.params.domain.toLowerCase();
+    if (!HOSTNAME_PATTERN.test(hostname)) {
       return reply.code(400).send({ error: "invalid_domain" });
     }
+    const domain = registrableDomain(hostname);
 
     const cached = cache.get(domain);
     if (cached) return { ...cached, cached: true };
