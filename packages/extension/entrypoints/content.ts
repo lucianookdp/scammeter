@@ -1,6 +1,8 @@
 import { browser } from "wxt/browser";
 import {
   computeScore,
+  domainImitatesBrand,
+  hasCheapTld,
   findPixPayloadInText,
   findValidCnpjInText,
   parsePixPayload,
@@ -32,6 +34,8 @@ export default defineContentScript({
     const input: ScoringInput = {
       siteBlocklisted: reputation?.blocklisted ?? undefined,
       domainRankTop100k: reputation?.top100k ?? undefined,
+      domainImitatesBrand: domainImitatesBrand(domain),
+      cheapTldPrivateWhois: hasCheapTld(domain),
       storeCnpj,
       cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
       domainAgeDays: domainInfo?.ageDays ?? null,

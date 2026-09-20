@@ -1,6 +1,8 @@
 import {
   computeScore,
+  domainImitatesBrand,
   formatCnpj,
+  hasCheapTld,
   parsePixPayload,
   validateCnpj,
   type CnpjRecord,
@@ -241,6 +243,8 @@ form.addEventListener("submit", async (event) => {
   const input: ScoringInput = {
     siteBlocklisted: reputation?.blocklisted ?? undefined,
     domainRankTop100k: reputation?.top100k ?? undefined,
+    domainImitatesBrand: domainImitatesBrand(domain),
+    cheapTldPrivateWhois: hasCheapTld(domain),
     storeCnpj,
     cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
     domainAgeDays: domainInfo?.ageDays ?? null,
