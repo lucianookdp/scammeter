@@ -1,47 +1,245 @@
 {
-  "extName": { "message": "Scammeter" },
-  "extDescription": { "message": "Diz se um site brasileiro é golpe, e por quê." },
-
-  "badge_baixo_risco": { "message": "Baixo risco" },
-  "badge_atencao": { "message": "Atenção" },
-  "badge_alto_risco": { "message": "Alto risco" },
-  "badge_nao_verificado": { "message": "Não foi possível verificar" },
-
-  "summary_baixo_risco": { "message": "Não encontramos sinais de risco nas checagens abaixo." },
-  "summary_atencao": { "message": "Alguns sinais merecem atenção antes de continuar." },
-  "summary_alto_risco": { "message": "Vários sinais fortes de golpe neste site." },
-  "summary_nao_verificado": { "message": "Nenhuma checagem retornou dados. Isso não quer dizer que o site é seguro." },
-
-  "reason_blocklist": { "message": "Este site está em uma lista de golpes conhecidos." },
-  "reason_pix_personal": { "message": "O Pix vai para uma pessoa, não para a empresa." },
-  "reason_pix_wrong_cnpj": { "message": "O Pix vai para outra empresa, diferente da que aparece no site." },
-  "reason_cnpj_inactive": { "message": "O CNPJ informado não está ativo." },
-  "reason_no_cnpj": { "message": "O site não informa CNPJ — normal em sites que não vendem direto ao consumidor." },
-  "reason_no_cnpj_with_payment": { "message": "O site pede Pix, mas não diz qual empresa vai receber." },
-  "reason_cnpj_active": { "message": "CNPJ ativo na Receita Federal." },
-  "reason_domain_new": { "message": "Este site foi criado há poucos dias." },
-  "reason_brand_lookalike": { "message": "O endereço parece imitar uma marca conhecida." },
-  "reason_cnae_mismatch": { "message": "A empresa é registrada com outra atividade." },
-  "reason_registrant_mismatch": { "message": "O site está registrado em outro nome." },
-  "reason_missing_address": { "message": "Falta o endereço da empresa." },
-  "reason_missing_return_policy": { "message": "Falta a política de troca." },
-  "reason_contact_only_whatsapp": { "message": "O único contato é WhatsApp ou e-mail gratuito." },
-  "reason_cheap_tld_private_whois": { "message": "Este tipo de endereço (.shop, .xyz) é comum em golpes." },
-  "reason_broken_social_links": { "message": "Os links de redes sociais não funcionam." },
-  "reason_tranco_top100k": { "message": "Site muito acessado." },
-  "reason_domain_established": { "message": "Domínio registrado há mais de cinco anos." },
-  "reason_domain_mature": { "message": "Domínio registrado há mais de dois anos." },
-  "reason_marketplace_notice": { "message": "Esta análise vale para o vendedor, não para a plataforma." },
-
-  "section_company": { "message": "Empresa" },
-  "section_site": { "message": "Site" },
-  "field_status": { "message": "Situação" },
-  "field_opened": { "message": "Abertura" },
-  "field_activity": { "message": "Atividade" },
-  "field_city": { "message": "Cidade" },
-  "field_domain_age": { "message": "Idade do domínio" },
-
-  "footer_disclaimer": { "message": "Esta é uma análise automática. Na dúvida, não pague." },
-  "popup_checking": { "message": "Analisando esta página…" },
-  "popup_no_page": { "message": "Abra um site para ver a análise." }
+  "extName": {
+    "message": "Scammeter"
+  },
+  "extDescription": {
+    "message": "Diz se um site brasileiro é golpe, e por quê."
+  },
+  "badge_baixo_risco": {
+    "message": "Baixo risco"
+  },
+  "badge_atencao": {
+    "message": "Atenção"
+  },
+  "badge_alto_risco": {
+    "message": "Alto risco"
+  },
+  "badge_nao_verificado": {
+    "message": "Não foi possível verificar"
+  },
+  "summary_baixo_risco": {
+    "message": "Não encontramos sinais de risco nas checagens abaixo."
+  },
+  "summary_atencao": {
+    "message": "Alguns sinais merecem atenção antes de continuar."
+  },
+  "summary_alto_risco": {
+    "message": "Vários sinais fortes de golpe neste site."
+  },
+  "summary_nao_verificado": {
+    "message": "Nenhuma checagem retornou dados. Isso não quer dizer que o site é seguro."
+  },
+  "reason_blocklist": {
+    "message": "Este site está em uma lista de golpes conhecidos."
+  },
+  "reason_pix_personal": {
+    "message": "O Pix vai para uma pessoa, não para a empresa."
+  },
+  "reason_pix_wrong_cnpj": {
+    "message": "O Pix vai para outra empresa, diferente da que aparece no site."
+  },
+  "reason_cnpj_inactive": {
+    "message": "O CNPJ informado não está ativo."
+  },
+  "reason_no_cnpj": {
+    "message": "O site não informa CNPJ — normal em sites que não vendem direto ao consumidor."
+  },
+  "reason_no_cnpj_with_payment": {
+    "message": "O site pede Pix, mas não diz qual empresa vai receber."
+  },
+  "reason_cnpj_active": {
+    "message": "CNPJ ativo na Receita Federal."
+  },
+  "reason_domain_new": {
+    "message": "Este site foi criado há poucos dias."
+  },
+  "reason_brand_lookalike": {
+    "message": "O endereço parece imitar uma marca conhecida."
+  },
+  "reason_cnae_mismatch": {
+    "message": "A empresa é registrada com outra atividade."
+  },
+  "reason_registrant_mismatch": {
+    "message": "O site está registrado em outro nome."
+  },
+  "reason_missing_address": {
+    "message": "Falta o endereço da empresa."
+  },
+  "reason_missing_return_policy": {
+    "message": "Falta a política de troca."
+  },
+  "reason_contact_only_whatsapp": {
+    "message": "O único contato é WhatsApp ou e-mail gratuito."
+  },
+  "reason_cheap_tld_private_whois": {
+    "message": "Este tipo de endereço (.shop, .xyz) é comum em golpes."
+  },
+  "reason_broken_social_links": {
+    "message": "Os links de redes sociais não funcionam."
+  },
+  "reason_tranco_top100k": {
+    "message": "Site muito acessado."
+  },
+  "reason_domain_established": {
+    "message": "Domínio registrado há mais de cinco anos."
+  },
+  "reason_domain_mature": {
+    "message": "Domínio registrado há mais de dois anos."
+  },
+  "reason_marketplace_notice": {
+    "message": "Esta análise vale para o vendedor, não para a plataforma."
+  },
+  "section_company": {
+    "message": "Empresa"
+  },
+  "section_site": {
+    "message": "Site"
+  },
+  "field_status": {
+    "message": "Situação"
+  },
+  "field_opened": {
+    "message": "Abertura"
+  },
+  "field_activity": {
+    "message": "Atividade"
+  },
+  "field_city": {
+    "message": "Cidade"
+  },
+  "field_domain_age": {
+    "message": "Idade do domínio"
+  },
+  "footer_disclaimer": {
+    "message": "Esta é uma análise automática. Na dúvida, não pague."
+  },
+  "popup_checking": {
+    "message": "Analisando esta página…"
+  },
+  "popup_no_page": {
+    "message": "Abra um site para ver a análise."
+  },
+  "group_alert": {
+    "message": "O que pesou contra"
+  },
+  "group_ok": {
+    "message": "O que está a favor"
+  },
+  "group_unverified": {
+    "message": "O que não deu para checar"
+  },
+  "group_checks": {
+    "message": "Checagens feitas"
+  },
+  "check_site": {
+    "message": "Página do site"
+  },
+  "check_site_read": {
+    "message": "lida e analisada"
+  },
+  "check_site_unreachable": {
+    "message": "o site não respondeu"
+  },
+  "check_site_skipped": {
+    "message": "não precisou, você informou os dados"
+  },
+  "check_domain": {
+    "message": "Domínio"
+  },
+  "check_domain_age": {
+    "message": "registrado há {age}"
+  },
+  "check_domain_unknown": {
+    "message": "idade não disponível para este domínio"
+  },
+  "check_cnpj": {
+    "message": "CNPJ"
+  },
+  "check_cnpj_none": {
+    "message": "nenhum encontrado na página"
+  },
+  "check_cnpj_unknown": {
+    "message": "não foi possível consultar"
+  },
+  "check_pix": {
+    "message": "Pix"
+  },
+  "check_pix_none": {
+    "message": "nenhum código na página"
+  },
+  "check_pix_unreadable": {
+    "message": "código Pix ilegível"
+  },
+  "check_blocklist": {
+    "message": "Listas de golpes"
+  },
+  "check_blocklist_unavailable": {
+    "message": "ainda não disponível"
+  },
+  "check_blocklist_clean": {
+    "message": "não consta"
+  },
+  "check_failed_rate_limited": {
+    "message": "muitas consultas, tente em um minuto"
+  },
+  "check_failed_timeout": {
+    "message": "demorou demais para responder"
+  },
+  "check_failed_offline": {
+    "message": "sem conexão com o nosso servidor"
+  },
+  "check_failed_upstream": {
+    "message": "a fonte de dados falhou"
+  },
+  "check_failed_not_found": {
+    "message": "não encontrado"
+  },
+  "pix_key_cpf": {
+    "message": "paga uma pessoa física (CPF)"
+  },
+  "pix_key_phone": {
+    "message": "paga um telefone, não uma empresa"
+  },
+  "pix_key_email": {
+    "message": "paga um e-mail, não uma empresa"
+  },
+  "pix_key_cnpj": {
+    "message": "paga uma empresa (CNPJ)"
+  },
+  "pix_key_random": {
+    "message": "chave aleatória, não diz quem recebe"
+  },
+  "pix_key_unknown": {
+    "message": "chave não identificada"
+  },
+  "transport_rate_limited": {
+    "message": "Você fez muitas consultas seguidas. Espere um minuto e tente de novo."
+  },
+  "transport_offline": {
+    "message": "Não conseguimos falar com o nosso servidor. Verifique sua conexão e tente de novo."
+  },
+  "transport_degraded": {
+    "message": "Parte das checagens falhou, então este resultado está incompleto."
+  },
+  "error_empty_url": {
+    "message": "Cole um link para verificar."
+  },
+  "error_url_too_long": {
+    "message": "Esse link é longo demais."
+  },
+  "error_unsupported_scheme": {
+    "message": "Só dá para verificar links http e https."
+  },
+  "error_no_tld": {
+    "message": "Cole um link válido, como loja.com.br."
+  },
+  "error_url_has_credentials": {
+    "message": "Esse link embute usuário e senha. Cole só o endereço do site."
+  },
+  "error_invalid_cnpj": {
+    "message": "Esse CNPJ não é válido. Confira os números."
+  },
+  "see_reclame_aqui": {
+    "message": "Ver avaliações no Reclame Aqui"
+  }
 }

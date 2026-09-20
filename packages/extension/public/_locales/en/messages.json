@@ -1,47 +1,245 @@
 {
-  "extName": { "message": "Scammeter" },
-  "extDescription": { "message": "Tells you if a Brazilian site is a scam, and why." },
-
-  "badge_baixo_risco": { "message": "Low risk" },
-  "badge_atencao": { "message": "Caution" },
-  "badge_alto_risco": { "message": "High risk" },
-  "badge_nao_verificado": { "message": "Could not verify" },
-
-  "summary_baixo_risco": { "message": "No risk signals in the checks below." },
-  "summary_atencao": { "message": "A few signals deserve attention before you continue." },
-  "summary_alto_risco": { "message": "Several strong scam signals on this site." },
-  "summary_nao_verificado": { "message": "No check returned any data. That does not mean the site is safe." },
-
-  "reason_blocklist": { "message": "This site is on a known-scam list." },
-  "reason_pix_personal": { "message": "The payment goes to a person, not the company." },
-  "reason_pix_wrong_cnpj": { "message": "The payment goes to a different company than the one on the site." },
-  "reason_cnpj_inactive": { "message": "The company's tax ID is not active." },
-  "reason_no_cnpj": { "message": "The site shows no tax ID — normal for sites that don't sell directly." },
-  "reason_no_cnpj_with_payment": { "message": "The site asks for a Pix payment but won't say which company receives it." },
-  "reason_cnpj_active": { "message": "Tax ID active with the federal revenue service." },
-  "reason_domain_new": { "message": "This site was created only days ago." },
-  "reason_brand_lookalike": { "message": "The address looks like it's imitating a known brand." },
-  "reason_cnae_mismatch": { "message": "The company is registered under a different business activity." },
-  "reason_registrant_mismatch": { "message": "The site is registered under a different name." },
-  "reason_missing_address": { "message": "The company address is missing." },
-  "reason_missing_return_policy": { "message": "The return policy is missing." },
-  "reason_contact_only_whatsapp": { "message": "The only contact is WhatsApp or a free email address." },
-  "reason_cheap_tld_private_whois": { "message": "This kind of address (.shop, .xyz) is common in scams." },
-  "reason_broken_social_links": { "message": "The social media links don't work." },
-  "reason_tranco_top100k": { "message": "This site gets a lot of traffic." },
-  "reason_domain_established": { "message": "Domain registered more than five years ago." },
-  "reason_domain_mature": { "message": "Domain registered more than two years ago." },
-  "reason_marketplace_notice": { "message": "This analysis covers the seller, not the marketplace itself." },
-
-  "section_company": { "message": "Company" },
-  "section_site": { "message": "Site" },
-  "field_status": { "message": "Status" },
-  "field_opened": { "message": "Opened" },
-  "field_activity": { "message": "Business activity" },
-  "field_city": { "message": "City" },
-  "field_domain_age": { "message": "Domain age" },
-
-  "footer_disclaimer": { "message": "This is an automated analysis. When in doubt, don't pay." },
-  "popup_checking": { "message": "Analyzing this page…" },
-  "popup_no_page": { "message": "Open a site to see the analysis." }
+  "extName": {
+    "message": "Scammeter"
+  },
+  "extDescription": {
+    "message": "Tells you if a Brazilian site is a scam, and why."
+  },
+  "badge_baixo_risco": {
+    "message": "Low risk"
+  },
+  "badge_atencao": {
+    "message": "Caution"
+  },
+  "badge_alto_risco": {
+    "message": "High risk"
+  },
+  "badge_nao_verificado": {
+    "message": "Could not verify"
+  },
+  "summary_baixo_risco": {
+    "message": "No risk signals in the checks below."
+  },
+  "summary_atencao": {
+    "message": "A few signals deserve attention before you continue."
+  },
+  "summary_alto_risco": {
+    "message": "Several strong scam signals on this site."
+  },
+  "summary_nao_verificado": {
+    "message": "No check returned any data. That does not mean the site is safe."
+  },
+  "reason_blocklist": {
+    "message": "This site is on a known-scam list."
+  },
+  "reason_pix_personal": {
+    "message": "The payment goes to a person, not the company."
+  },
+  "reason_pix_wrong_cnpj": {
+    "message": "The payment goes to a different company than the one on the site."
+  },
+  "reason_cnpj_inactive": {
+    "message": "The company's tax ID is not active."
+  },
+  "reason_no_cnpj": {
+    "message": "The site shows no tax ID — normal for sites that don't sell directly."
+  },
+  "reason_no_cnpj_with_payment": {
+    "message": "The site asks for a Pix payment but won't say which company receives it."
+  },
+  "reason_cnpj_active": {
+    "message": "Tax ID active with the federal revenue service."
+  },
+  "reason_domain_new": {
+    "message": "This site was created only days ago."
+  },
+  "reason_brand_lookalike": {
+    "message": "The address looks like it's imitating a known brand."
+  },
+  "reason_cnae_mismatch": {
+    "message": "The company is registered under a different business activity."
+  },
+  "reason_registrant_mismatch": {
+    "message": "The site is registered under a different name."
+  },
+  "reason_missing_address": {
+    "message": "The company address is missing."
+  },
+  "reason_missing_return_policy": {
+    "message": "The return policy is missing."
+  },
+  "reason_contact_only_whatsapp": {
+    "message": "The only contact is WhatsApp or a free email address."
+  },
+  "reason_cheap_tld_private_whois": {
+    "message": "This kind of address (.shop, .xyz) is common in scams."
+  },
+  "reason_broken_social_links": {
+    "message": "The social media links don't work."
+  },
+  "reason_tranco_top100k": {
+    "message": "This site gets a lot of traffic."
+  },
+  "reason_domain_established": {
+    "message": "Domain registered more than five years ago."
+  },
+  "reason_domain_mature": {
+    "message": "Domain registered more than two years ago."
+  },
+  "reason_marketplace_notice": {
+    "message": "This analysis covers the seller, not the marketplace itself."
+  },
+  "section_company": {
+    "message": "Company"
+  },
+  "section_site": {
+    "message": "Site"
+  },
+  "field_status": {
+    "message": "Status"
+  },
+  "field_opened": {
+    "message": "Opened"
+  },
+  "field_activity": {
+    "message": "Business activity"
+  },
+  "field_city": {
+    "message": "City"
+  },
+  "field_domain_age": {
+    "message": "Domain age"
+  },
+  "footer_disclaimer": {
+    "message": "This is an automated analysis. When in doubt, don't pay."
+  },
+  "popup_checking": {
+    "message": "Analyzing this page…"
+  },
+  "popup_no_page": {
+    "message": "Open a site to see the analysis."
+  },
+  "group_alert": {
+    "message": "What counted against it"
+  },
+  "group_ok": {
+    "message": "What counted in its favour"
+  },
+  "group_unverified": {
+    "message": "What we couldn't check"
+  },
+  "group_checks": {
+    "message": "Checks we ran"
+  },
+  "check_site": {
+    "message": "The site's page"
+  },
+  "check_site_read": {
+    "message": "read and analysed"
+  },
+  "check_site_unreachable": {
+    "message": "the site didn't answer"
+  },
+  "check_site_skipped": {
+    "message": "not needed, you supplied the data"
+  },
+  "check_domain": {
+    "message": "Domain"
+  },
+  "check_domain_age": {
+    "message": "registered {age} ago"
+  },
+  "check_domain_unknown": {
+    "message": "age not available for this domain"
+  },
+  "check_cnpj": {
+    "message": "Tax ID"
+  },
+  "check_cnpj_none": {
+    "message": "none found on the page"
+  },
+  "check_cnpj_unknown": {
+    "message": "lookup unavailable"
+  },
+  "check_pix": {
+    "message": "Pix"
+  },
+  "check_pix_none": {
+    "message": "no code on the page"
+  },
+  "check_pix_unreadable": {
+    "message": "Pix code unreadable"
+  },
+  "check_blocklist": {
+    "message": "Scam lists"
+  },
+  "check_blocklist_unavailable": {
+    "message": "not available yet"
+  },
+  "check_blocklist_clean": {
+    "message": "not listed"
+  },
+  "check_failed_rate_limited": {
+    "message": "too many lookups, try again in a minute"
+  },
+  "check_failed_timeout": {
+    "message": "took too long to answer"
+  },
+  "check_failed_offline": {
+    "message": "no connection to our server"
+  },
+  "check_failed_upstream": {
+    "message": "the data source failed"
+  },
+  "check_failed_not_found": {
+    "message": "not found"
+  },
+  "pix_key_cpf": {
+    "message": "pays an individual, not a company"
+  },
+  "pix_key_phone": {
+    "message": "pays a phone number, not a company"
+  },
+  "pix_key_email": {
+    "message": "pays an email address, not a company"
+  },
+  "pix_key_cnpj": {
+    "message": "pays a company"
+  },
+  "pix_key_random": {
+    "message": "random key, doesn't say who receives"
+  },
+  "pix_key_unknown": {
+    "message": "key not identified"
+  },
+  "transport_rate_limited": {
+    "message": "You've run too many lookups in a row. Wait a minute and try again."
+  },
+  "transport_offline": {
+    "message": "We couldn't reach our server. Check your connection and try again."
+  },
+  "transport_degraded": {
+    "message": "Some of the checks failed, so this result is incomplete."
+  },
+  "error_empty_url": {
+    "message": "Paste a link to check."
+  },
+  "error_url_too_long": {
+    "message": "That link is too long."
+  },
+  "error_unsupported_scheme": {
+    "message": "We can only check http and https links."
+  },
+  "error_no_tld": {
+    "message": "Paste a valid link, like shop.com.br."
+  },
+  "error_url_has_credentials": {
+    "message": "That link embeds a username and password. Paste just the site address."
+  },
+  "error_invalid_cnpj": {
+    "message": "That tax ID isn't valid. Check the digits."
+  },
+  "see_reclame_aqui": {
+    "message": "See reviews on Reclame Aqui"
+  }
 }

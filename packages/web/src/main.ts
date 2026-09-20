@@ -5,6 +5,7 @@ import {
   hasCheapTld,
   parsePixPayload,
   validateCnpj,
+  type CheckStatus,
   type CnpjRecord,
   type ScoreResult,
   type ScoringInput,
@@ -12,7 +13,7 @@ import {
 import { t } from "./i18n";
 import { getTheme, setTheme } from "./theme";
 import { parseSiteUrl } from "./url";
-import { fetchCnpjRecord, fetchDomainInfo, fetchReputation, fetchScan } from "./proxyClient";
+import { fetchCnpjRecord, fetchDomainInfo, fetchReputation, fetchScan, type FetchFailure } from "./proxyClient";
 
 // Lucide icons (ISC license), inlined as static markup — no icon-font/JS dependency needed.
 const ICONS = {
@@ -65,22 +66,28 @@ const needleGroup = document.querySelector(".needle-group") as HTMLElement;
 const scoreEl = document.getElementById("score")!;
 const badgeEl = document.getElementById("badge")!;
 const captionEl = document.getElementById("gauge-caption")!;
-const reasonsEl = document.getElementById("reasons") as HTMLUListElement;
-const factsEl = document.getElementById("facts") as HTMLDivElement;
-const factCompanyEl = document.getElementById("fact-company") as HTMLParagraphElement;
-const factCompanyTextEl = document.getElementById("fact-company-text")!;
-const factDomainEl = document.getElementById("fact-domain") as HTMLParagraphElement;
-const factDomainTextEl = document.getElementById("fact-domain-text")!;
+const alertBar = document.getElementById("alertbar") as HTMLParagraphElement;
+const resultsEl = document.getElementById("results") as HTMLDivElement;
+const checksGroup = document.getElementById("group-checks") as HTMLElement;
+const checksList = checksGroup.querySelector(".checks") as HTMLDListElement;
 const factRaEl = document.getElementById("fact-reclameaqui") as HTMLAnchorElement;
 const factRaTextEl = document.getElementById("fact-reclameaqui-text")!;
 
-const CNPJ_STATUS_LABEL: Record<string, string> = {
-  ativa: "ativa",
-  baixada: "baixada",
-  inapta: "inapta",
-  suspensa: "suspensa",
-  nula: "nula",
+const GROUPS: Record<CheckStatus, { section: HTMLElement; title: HTMLElement; list: HTMLUListElement }> = {
+  alert: groupRefs("group-alert"),
+  ok: groupRefs("group-ok"),
+  unverified: groupRefs("group-unverified"),
 };
+
+function groupRefs(id: string) {
+  const section = document.getElementById(id) as HTMLElement;
+  return {
+    section,
+    title: section.querySelector(".group-title") as HTMLElement,
+    list: section.querySelector(".reasons") as HTMLUListElement,
+  };
+}
+
 
 captionEl.textContent = t("gauge_idle");
 
@@ -99,10 +106,12 @@ function setNeedle(score: number) {
 }
 
 function animateScore(target: number) {
-  if (reduceMotion) {
-    scoreEl.textContent = String(target);
-    return;
-  }
+  // Write the real number first. requestAnimationFrame never fires in a
+  // backgrounded tab, so a result rendered there would otherwise sit on the
+  // placeholder until the tab came forward.
+  scoreEl.textContent = String(target);
+  if (reduceMotion) return;
+
   const start = performance.now();
   const duration = 700;
   function tick(now: number) {
@@ -119,12 +128,19 @@ function setLoading(isLoading: boolean) {
   gauge.classList.toggle("loading", isLoading);
   if (isLoading) {
     captionEl.textContent = t("checking");
-    reasonsEl.classList.remove("visible");
-    factsEl.hidden = true;
+    resultsEl.hidden = true;
+    alertBar.hidden = true;
   }
 }
 
-function renderResult(result: ScoreResult) {
+/** One line per lookup, so the reader can see what the verdict is actually built on. */
+export interface CheckRow {
+  labelKey: string;
+  value: string;
+  state: CheckStatus;
+}
+
+function renderResult(result: ScoreResult, checks: CheckRow[]) {
   const unverified = result.verdict === "nao_verificado";
   gauge.classList.remove("idle");
   gauge.classList.toggle("unverified", unverified);
@@ -141,11 +157,55 @@ function renderResult(result: ScoreResult) {
   badgeEl.className = `badge badge-${result.verdict}`;
   captionEl.textContent = t(`summary_${result.verdict}`);
 
-  reasonsEl.innerHTML = result.signals
-    .map((s) => `<li class="reason reason-${s.status}">${ICONS[s.status]}<span>${reasonLabel(s.reasonKey)}</span></li>`)
-    .join("");
-  reasonsEl.hidden = result.signals.length === 0;
-  requestAnimationFrame(() => reasonsEl.classList.add("visible"));
+  // Heaviest risk first. Scoring order is an implementation detail, and reading
+  // a +5 before a +50 buries the thing the person most needs to see.
+  const byStatus: Record<CheckStatus, typeof result.signals> = { alert: [], ok: [], unverified: [] };
+  for (const signal of result.signals) byStatus[signal.status]?.push(signal);
+  byStatus.alert.sort((a, b) => b.points - a.points);
+
+  for (const status of ["alert", "ok", "unverified"] as CheckStatus[]) {
+    const group = GROUPS[status];
+    const signals = byStatus[status];
+    group.section.hidden = signals.length === 0;
+    group.title.textContent = t(`group_${status}`);
+    group.list.replaceChildren(
+      ...signals.map((signal) => {
+        const li = document.createElement("li");
+        li.className = `reason reason-${signal.status}`;
+        li.insertAdjacentHTML("afterbegin", ICONS[signal.status]);
+        // Showing the weight is what turns the score from a verdict into
+        // arithmetic the reader can follow.
+        if (signal.points > 0) {
+          const weight = document.createElement("span");
+          weight.className = "reason-weight";
+          weight.textContent = `+${signal.points}`;
+          li.append(weight);
+        }
+        const text = document.createElement("span");
+        text.textContent = reasonLabel(signal.reasonKey);
+        li.append(text);
+        return li;
+      }),
+    );
+  }
+
+  checksGroup.hidden = checks.length === 0;
+  checksGroup.querySelector(".group-title")!.textContent = t("group_checks");
+  checksList.replaceChildren(
+    ...checks.flatMap((check) => {
+      const dt = document.createElement("dt");
+      dt.textContent = t(check.labelKey);
+      const dd = document.createElement("dd");
+      dd.className = `check-value check-${check.state}`;
+      dd.textContent = check.value;
+      return [dt, dd];
+    }),
+  );
+
+  resultsEl.hidden = false;
+  // A timer, not rAF, for the same reason: timers still run while hidden, so
+  // the result is never left sitting at opacity 0.
+  setTimeout(() => resultsEl.classList.add("visible"), 0);
 }
 
 function formatAge(days: number): string {
@@ -156,37 +216,42 @@ function formatAge(days: number): string {
   return days === 1 ? "1 dia" : `${days} dias`;
 }
 
-function renderFacts(
-  cnpjRecord: CnpjRecord | null | undefined,
-  storeCnpj: string | null | undefined,
-  domainAgeDays: number | null | undefined,
-  domain: string,
-) {
-  const hasCompany = Boolean(cnpjRecord?.razaoSocial && storeCnpj);
-  factCompanyEl.hidden = !hasCompany;
-  if (hasCompany && cnpjRecord && storeCnpj) {
-    const status = CNPJ_STATUS_LABEL[cnpjRecord.status] ?? cnpjRecord.status;
-    factCompanyTextEl.textContent = `${cnpjRecord.razaoSocial} · CNPJ ${formatCnpj(storeCnpj)} · situação ${status}`;
+/**
+ * A lookup that came back empty and a lookup that never happened are different
+ * things, and the page used to render both as silence.
+ */
+function showTransportProblem(failures: FetchFailure[]) {
+  if (failures.length === 0) {
+    alertBar.hidden = true;
+    return;
   }
-
-  const hasDomainAge = typeof domainAgeDays === "number";
-  factDomainEl.hidden = !hasDomainAge;
-  if (hasDomainAge) {
-    factDomainTextEl.textContent = `Domínio registrado há ${formatAge(domainAgeDays as number)}`;
-  }
-
-  const searchTerm = cnpjRecord?.razaoSocial ?? domain;
-  factRaEl.href = `https://www.google.com/search?q=${encodeURIComponent(`${searchTerm} reclame aqui`)}`;
-  factRaTextEl.textContent = "Ver avaliações no Reclame Aqui";
-  factRaEl.hidden = false;
-
-  factsEl.hidden = false;
+  const worst = failures.includes("rate_limited")
+    ? "rate_limited"
+    : failures.every((f) => f === "offline")
+      ? "offline"
+      : "degraded";
+  alertBar.textContent = t(`transport_${worst}`);
+  alertBar.className = `alertbar alertbar-${worst === "rate_limited" ? "warn" : "info"}`;
+  alertBar.hidden = false;
 }
 
 function showScanHint(key: string) {
   scanHint.textContent = t(key);
   scanHint.hidden = false;
   advanced.open = true;
+}
+
+const CNPJ_STATUS_LABEL: Record<string, string> = {
+  ativa: "ativa",
+  baixada: "baixada",
+  inapta: "inapta",
+  suspensa: "suspensa",
+  nula: "nula",
+};
+
+/** The one thing a failed lookup should never look like is a clean result. */
+function failureText(failure: FetchFailure): string {
+  return t(`check_failed_${failure}`);
 }
 
 form.addEventListener("submit", async (event) => {
@@ -200,8 +265,8 @@ form.addEventListener("submit", async (event) => {
     const parsed = parseSiteUrl(linkInput.value);
     link = parsed.toString();
     domain = parsed.hostname;
-  } catch {
-    linkError.textContent = t("error_invalid_url");
+  } catch (error) {
+    linkError.textContent = t(`error_${(error as Error).message}`);
     linkError.hidden = false;
     return;
   }
@@ -220,34 +285,94 @@ form.addEventListener("submit", async (event) => {
     fetchReputation(domain),
   ]);
 
-  let storeCnpj: string | null | undefined = cnpjValue ? (validateCnpj(cnpjValue) ? cnpjValue : null) : undefined;
-  if (!cnpjValue) {
-    if (scan?.fetched) {
-      storeCnpj = scan.cnpj;
-      if (scan.cnpj) {
-        cnpjInput.value = formatCnpj(scan.cnpj);
-        advanced.open = true;
-      } else {
-        showScanHint("scan_no_cnpj");
-      }
-    } else {
-      showScanHint("scan_unreachable");
+  const checks: CheckRow[] = [];
+
+  let storeCnpj: string | null | undefined;
+  if (cnpjValue) {
+    // A CNPJ the person typed by hand is the one case where "not found" means
+    // "you mistyped it", so say that instead of scoring it as a missing CNPJ.
+    if (!validateCnpj(cnpjValue)) {
+      setLoading(false);
+      linkError.textContent = t("error_invalid_cnpj");
+      linkError.hidden = false;
+      return;
     }
+    storeCnpj = cnpjValue;
+  } else if (scan?.data?.fetched) {
+    storeCnpj = scan.data.cnpj;
+    if (scan.data.cnpj) {
+      cnpjInput.value = formatCnpj(scan.data.cnpj);
+    } else {
+      showScanHint("scan_no_cnpj");
+    }
+  } else {
+    showScanHint("scan_unreachable");
   }
 
-  const pixPayload = pixValue || scan?.pixPayload || "";
+  checks.push({
+    labelKey: "check_site",
+    value: scan?.data?.fetched
+      ? t("check_site_read")
+      : scan?.failure
+        ? failureText(scan.failure)
+        : cnpjValue && pixValue
+          ? t("check_site_skipped")
+          : t("check_site_unreachable"),
+    state: scan?.data?.fetched ? "ok" : "unverified",
+  });
+
+  const pixPayload = pixValue || scan?.data?.pixPayload || "";
   const parsedPix = pixPayload ? parsePixPayload(pixPayload) : null;
 
-  const cnpjRecord = storeCnpj ? await fetchCnpjRecord(storeCnpj) : undefined;
+  const cnpjResult = storeCnpj ? await fetchCnpjRecord(storeCnpj) : undefined;
+  const cnpjRecord = cnpjResult?.data ?? undefined;
+
+  const ageDays = domainInfo?.data?.ageDays ?? null;
+  checks.push({
+    labelKey: "check_domain",
+    value:
+      typeof ageDays === "number"
+        ? `${domain} · ${t("check_domain_age").replace("{age}", formatAge(ageDays))}`
+        : domainInfo?.failure
+          ? failureText(domainInfo.failure)
+          : t("check_domain_unknown"),
+    state: typeof ageDays === "number" ? "ok" : "unverified",
+  });
+
+  checks.push({
+    labelKey: "check_cnpj",
+    value: cnpjRecord?.razaoSocial
+      ? `${cnpjRecord.razaoSocial} · ${formatCnpj(storeCnpj as string)} · ${CNPJ_STATUS_LABEL[cnpjRecord.status] ?? cnpjRecord.status}`
+      : storeCnpj
+        ? (cnpjResult?.failure ? failureText(cnpjResult.failure) : t("check_cnpj_unknown"))
+        : t("check_cnpj_none"),
+    state: cnpjRecord?.status === "ativa" ? "ok" : cnpjRecord ? "alert" : "unverified",
+  });
+
+  checks.push({
+    labelKey: "check_pix",
+    value: parsedPix?.merchantAccount?.key
+      ? t(`pix_key_${parsedPix.keyType}`)
+      : pixPayload
+        ? t("check_pix_unreadable")
+        : t("check_pix_none"),
+    state: parsedPix?.merchantAccount?.key ? (parsedPix.keyType === "cnpj" ? "ok" : "alert") : "unverified",
+  });
+
+  checks.push({
+    labelKey: "check_blocklist",
+    value: reputation?.data?.blocklisted == null ? t("check_blocklist_unavailable") : t("check_blocklist_clean"),
+    state: "unverified",
+  });
 
   const input: ScoringInput = {
-    siteBlocklisted: reputation?.blocklisted ?? undefined,
-    domainRankTop100k: reputation?.top100k ?? undefined,
+    siteBlocklisted: reputation?.data?.blocklisted ?? undefined,
+    domainRankTop100k: reputation?.data?.top100k ?? undefined,
     domainImitatesBrand: domainImitatesBrand(domain),
     cheapTldPrivateWhois: hasCheapTld(domain),
     storeCnpj,
     cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
-    domainAgeDays: domainInfo?.ageDays ?? null,
+    domainAgeDays: ageDays,
     pix:
       parsedPix?.merchantAccount?.key && parsedPix.keyType !== "unknown"
         ? {
@@ -258,6 +383,15 @@ form.addEventListener("submit", async (event) => {
   };
 
   setLoading(false);
-  renderResult(computeScore(input));
-  renderFacts(cnpjRecord, storeCnpj, domainInfo?.ageDays, domain);
+  renderResult(computeScore(input), checks);
+  showTransportProblem(
+    [scan?.failure, domainInfo?.failure, reputation?.failure, cnpjResult?.failure].filter(
+      (f): f is FetchFailure => Boolean(f),
+    ),
+  );
+
+  const searchTerm = cnpjRecord?.razaoSocial ?? domain;
+  factRaEl.href = `https://www.google.com/search?q=${encodeURIComponent(`${searchTerm} reclame aqui`)}`;
+  factRaTextEl.textContent = t("see_reclame_aqui");
+  factRaEl.hidden = false;
 });

@@ -12,7 +12,6 @@ const pageStrings: Record<string, string> = {
   button_verify: "Verificar",
   gauge_idle: "Cole o link para começar",
   checking: "Analisando…",
-  error_invalid_url: "Cole um link válido.",
   scan_no_cnpj: "Não encontramos um CNPJ nesta página. Se souber, informe abaixo.",
   scan_unreachable: "Não conseguimos acessar este site automaticamente. Se souber, informe o CNPJ abaixo.",
   theme_to_dark: "Mudar para tema escuro",
