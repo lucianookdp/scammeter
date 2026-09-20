@@ -7,12 +7,26 @@ import { TtlCache } from "../cache.js";
 const MAX_BYTES = 2_000_000; // enough for real page HTML, not enough to be a DoS vector
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_REDIRECTS = 4;
+// A URL is only worth fetching on the ports the web actually serves on.
+// Anything else is someone using us to reach an internal service.
+const ALLOWED_PORTS = new Set(["", "80", "443", "8080", "8443"]);
+
+/** The checks a URL must pass before we will fetch it, on the way in and on every redirect. */
+function isFetchableUrl(url: URL): boolean {
+  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+  if (!ALLOWED_PORTS.has(url.port)) return false;
+  // Embedded credentials would be forwarded upstream and kept in our cache key.
+  if (url.username || url.password) return false;
+  return true;
+}
 
 interface ScanResult {
   fetched: boolean;
   cnpj: string | null;
   pixPayload: string | null;
 }
+
+const MAX_URL_LENGTH = 2048;
 
 const cache = new TtlCache<ScanResult>(10 * 60_000); // 10m — a page's own CNPJ/Pix rarely changes minute to minute
 
@@ -25,8 +39,12 @@ async function readCappedText(body: ReadableStream<Uint8Array>): Promise<string>
     while (received < MAX_BYTES) {
       const { done, value } = await reader.read();
       if (done) break;
-      received += value.length;
-      html += decoder.decode(value, { stream: true });
+      // Trim the chunk that crosses the line — checking only before the read
+      // let a single large chunk carry us well past the cap.
+      const remaining = MAX_BYTES - received;
+      const chunk = value.length > remaining ? value.subarray(0, remaining) : value;
+      received += chunk.length;
+      html += decoder.decode(chunk, { stream: true });
     }
   } finally {
     reader.cancel().catch(() => {});
@@ -39,7 +57,7 @@ async function safeFetchHtml(startUrl: URL): Promise<string | null> {
   let current = startUrl;
 
   for (let hop = 0; hop < MAX_REDIRECTS; hop++) {
-    if (current.protocol !== "http:" && current.protocol !== "https:") return null;
+    if (!isFetchableUrl(current)) return null;
     if (await resolvesToPrivateIp(current.hostname)) return null;
 
     const controller = new AbortController();
@@ -80,17 +98,22 @@ export function registerScanRoute(app: FastifyInstance) {
     const raw = req.query.url;
     if (!raw) return reply.code(400).send({ error: "missing_url" });
 
+    if (raw.length > MAX_URL_LENGTH) return reply.code(400).send({ error: "url_too_long" });
+
     let target: URL;
     try {
       target = new URL(raw);
     } catch {
       return reply.code(400).send({ error: "invalid_url" });
     }
-    if (target.protocol !== "http:" && target.protocol !== "https:") {
-      return reply.code(400).send({ error: "invalid_protocol" });
+    if (!isFetchableUrl(target)) {
+      return reply.code(400).send({ error: "invalid_url" });
     }
 
-    const cacheKey = target.toString();
+    // Cache on origin + path only. A query string can carry a session token or
+    // an order id, and we have no business holding on to either.
+    target.hash = "";
+    const cacheKey = `${target.origin}${target.pathname}`;
     const cached = cache.get(cacheKey);
     if (cached) return { ...cached, cached: true };
 

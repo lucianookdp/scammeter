@@ -48,3 +48,43 @@ describe("parseSiteUrl", () => {
     expect(parseSiteUrl("httpsomething.com").hostname).toBe("httpsomething.com");
   });
 });
+
+describe("parseSiteUrl — hostile and malformed input", () => {
+  it("rejects a javascript: payload instead of prefixing https:// onto it", () => {
+    // The old code only tested for a leading http(s)://, so anything else got
+    // "https://" glued on front and silently became a weird but valid URL.
+    expect(() => parseSiteUrl("javascript:alert(1)")).toThrow("unsupported_scheme");
+    expect(() => parseSiteUrl("JavaScript:alert(1)")).toThrow("unsupported_scheme");
+  });
+
+  it("rejects other schemes we can't check", () => {
+    expect(() => parseSiteUrl("data:text/html,<h1>x</h1>")).toThrow("unsupported_scheme");
+    expect(() => parseSiteUrl("file:///etc/passwd")).toThrow("unsupported_scheme");
+    expect(() => parseSiteUrl("ftp://example.com")).toThrow("unsupported_scheme");
+  });
+
+  it("rejects a link with embedded credentials", () => {
+    // Also the classic phishing shape: the real host is the one after the @.
+    expect(() => parseSiteUrl("https://mercadolivre.com.br@evil.example")).toThrow("url_has_credentials");
+    expect(() => parseSiteUrl("https://user:senha@loja.com.br")).toThrow("url_has_credentials");
+  });
+
+  it("rejects an absurdly long link rather than shipping it to the proxy", () => {
+    expect(() => parseSiteUrl(`https://loja.com.br/${"a".repeat(3000)}`)).toThrow("url_too_long");
+  });
+
+  it("names the specific problem so the page can explain it", () => {
+    expect(() => parseSiteUrl("")).toThrow("empty_url");
+    expect(() => parseSiteUrl("golpe")).toThrow("no_tld");
+  });
+
+  it("survives unicode and punycode hostnames without throwing something unexpected", () => {
+    expect(parseSiteUrl("lojaçúcar.com.br").hostname).toContain("xn--");
+    expect(parseSiteUrl("xn--80ak6aa92e.com").hostname).toBe("xn--80ak6aa92e.com");
+  });
+
+  it("does not choke on a trailing dot or an uppercase host", () => {
+    expect(parseSiteUrl("LOJA.COM.BR").hostname).toBe("loja.com.br");
+    expect(parseSiteUrl("loja.com.br.").hostname).toBe("loja.com.br.");
+  });
+});
