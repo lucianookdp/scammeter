@@ -24,13 +24,13 @@
     "message": "Alguns sinais merecem atenção antes de continuar."
   },
   "summary_alto_risco": {
-    "message": "Vários sinais fortes de golpe neste site."
+    "message": "Há sinais de risco que exigem cautela antes de continuar."
   },
   "summary_nao_verificado": {
     "message": "Nenhuma checagem retornou dados. Isso não quer dizer que o site é seguro."
   },
   "reason_blocklist": {
-    "message": "Este site está em uma lista de golpes conhecidos."
+    "message": "Este endereço consta na lista de phishing PhishDestroy."
   },
   "reason_pix_personal": {
     "message": "O Pix vai para uma pessoa, não para a empresa."
@@ -171,13 +171,13 @@
     "message": "código Pix ilegível"
   },
   "check_blocklist": {
-    "message": "Listas de golpes"
+    "message": "Lista de phishing"
   },
   "check_blocklist_unavailable": {
-    "message": "ainda não disponível"
+    "message": "Não foi possível consultar a lista de phishing."
   },
   "check_blocklist_clean": {
-    "message": "não consta"
+    "message": "Este endereço não consta nesta lista. Isso não garante segurança."
   },
   "check_failed_rate_limited": {
     "message": "muitas consultas, tente em um minuto"
@@ -241,5 +241,14 @@
   },
   "see_reclame_aqui": {
     "message": "Ver avaliações no Reclame Aqui"
+  },
+  "check_blocklist_stale": {
+    "message": "A cópia da lista venceu e a atualização falhou. Checagem não verificada."
+  },
+  "check_blocklist_downloaded": {
+    "message": "cópia obtida em"
+  },
+  "check_blocklist_listed": {
+    "message": "Este endereço consta na lista de phishing."
   }
 }

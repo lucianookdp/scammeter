@@ -1,4 +1,4 @@
-import type { CnpjRecord } from "@scammeter/core";
+import type { CnpjRecord, ReputationResult } from "@scammeter/core";
 import { PROXY_URL } from "./config";
 
 async function getJson<T>(path: string, timeoutMs = 5000): Promise<T | null> {
@@ -25,6 +25,6 @@ export function fetchDomainInfo(domain: string): Promise<{ ageDays: number | nul
 
 export function fetchReputation(
   domain: string,
-): Promise<{ blocklisted: boolean | null; top100k: boolean | null } | null> {
-  return getJson(`/reputation/${domain}`);
+): Promise<ReputationResult | null> {
+  return getJson(`/reputation/${encodeURIComponent(domain)}`);
 }

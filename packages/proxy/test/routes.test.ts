@@ -143,9 +143,9 @@ describe("/scan — the route that fetches a URL on the caller's behalf", () => 
   });
 });
 
-describe("/reputation — the stub", () => {
+describe("/reputation — provider unavailable", () => {
   it("reports unverified rather than inventing a clean result", async () => {
     const res = await app.inject({ method: "GET", url: "/reputation/example.com" });
-    expect(res.json()).toEqual({ blocklisted: null, top100k: null });
+    expect(res.json()).toMatchObject({ blocklisted: null, top100k: null, status: "unavailable", source: "PhishDestroy" });
   });
 });

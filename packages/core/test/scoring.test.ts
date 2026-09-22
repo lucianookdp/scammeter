@@ -90,3 +90,7 @@ describe("warnings survive reputation bonuses", () => {
     expect(result.verdict).toBe("nao_verificado");
   });
 });
+
+it("a negative feed lookup alone does not prove low risk", () => {
+  expect(computeScore({ siteBlocklisted: false }).verdict).toBe("nao_verificado");
+});
