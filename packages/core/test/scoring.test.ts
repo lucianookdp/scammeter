@@ -73,3 +73,20 @@ describe("computeScore", () => {
     expect(result.signals[0].points).toBe(0);
   });
 });
+
+
+describe("warnings survive reputation bonuses", () => {
+  it("keeps a brand warning visible on old popular domains", () => {
+    const result = computeScore({ domainImitatesBrand: true, domainAgeDays: 9000, domainRankTop100k: true });
+    expect(result.score).toBe(30);
+    expect(result.verdict).toBe("atencao");
+  });
+  it("keeps blocklist score consistent with the verdict", () => {
+    expect(computeScore({ siteBlocklisted: true, domainAgeDays: 9000, domainRankTop100k: true }).score).toBe(100);
+  });
+  it("does not confuse unknown company status with inactivity", () => {
+    const result = computeScore({ cnpjRecord: { status: "desconhecida" } });
+    expect(result.score).toBe(0);
+    expect(result.verdict).toBe("nao_verificado");
+  });
+});

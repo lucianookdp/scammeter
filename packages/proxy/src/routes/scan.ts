@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { findValidCnpjInText, findPixPayloadInText } from "@scammeter/core";
 import { PROXY_USER_AGENT } from "../userAgent.js";
@@ -62,32 +63,35 @@ async function safeFetchHtml(startUrl: URL): Promise<string | null> {
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-    let res: Response;
     try {
-      res = await fetch(current, {
+      const res = await fetch(current, {
         signal: controller.signal,
         redirect: "manual",
         headers: { "User-Agent": PROXY_USER_AGENT, Accept: "text/html" },
       });
+
+      if (res.status >= 300 && res.status < 400) {
+        const location = res.headers.get("location");
+        await res.body?.cancel();
+        if (!location) return null;
+        try {
+          current = new URL(location, current);
+        } catch {
+          return null;
+        }
+        continue;
+      }
+
+      if (!res.ok || !res.body) {
+        await res.body?.cancel();
+        return null;
+      }
+      return await readCappedText(res.body);
     } catch {
       return null;
     } finally {
       clearTimeout(timeout);
     }
-
-    if (res.status >= 300 && res.status < 400) {
-      const location = res.headers.get("location");
-      if (!location) return null;
-      try {
-        current = new URL(location, current);
-      } catch {
-        return null;
-      }
-      continue;
-    }
-
-    if (!res.ok || !res.body) return null;
-    return readCappedText(res.body);
   }
 
   return null; // too many redirects
@@ -110,10 +114,9 @@ export function registerScanRoute(app: FastifyInstance) {
       return reply.code(400).send({ error: "invalid_url" });
     }
 
-    // Cache on origin + path only. A query string can carry a session token or
-    // an order id, and we have no business holding on to either.
+    // Keep query-dependent pages distinct without storing raw tokens as keys.
     target.hash = "";
-    const cacheKey = `${target.origin}${target.pathname}`;
+    const cacheKey = createHash("sha256").update(target.href).digest("hex");
     const cached = cache.get(cacheKey);
     if (cached) return { ...cached, cached: true };
 
