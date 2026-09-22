@@ -11,6 +11,7 @@ import {
   type ScoringInput,
 } from "@scammeter/core";
 import { t } from "./i18n";
+import { reputationCheck } from "./reputation";
 import { getTheme, setTheme } from "./theme";
 import { parseSiteUrl } from "./url";
 import { fetchCnpjRecord, fetchDomainInfo, fetchReputation, fetchScan, type FetchFailure } from "./proxyClient";
@@ -344,8 +345,7 @@ form.addEventListener("submit", async (event) => {
 
     checks.push({
       labelKey: "check_blocklist",
-      value: reputation?.data?.blocklisted == null ? t("check_blocklist_unavailable") : t("check_blocklist_clean"),
-      state: "unverified",
+      ...reputationCheck(reputation.data, reputation.failure),
     });
 
     const input: ScoringInput = {

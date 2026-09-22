@@ -1,4 +1,4 @@
-import type { CnpjRecord } from "@scammeter/core";
+import type { CnpjRecord, ReputationResult } from "@scammeter/core";
 
 const PROXY_URL = import.meta.env.DEV ? "http://localhost:8787" : "https://scammeter-proxy-production.up.railway.app";
 
@@ -41,7 +41,7 @@ export function fetchDomainInfo(domain: string): Promise<Fetched<{ ageDays: numb
 
 export function fetchReputation(
   domain: string,
-): Promise<Fetched<{ blocklisted: boolean | null; top100k: boolean | null }>> {
+): Promise<Fetched<ReputationResult>> {
   return getJson(`/reputation/${encodeURIComponent(domain)}`);
 }
 

@@ -113,7 +113,7 @@ export function computeScore(input: ScoringInput): ScoreResult {
 
   // "Low risk" has to mean something was actually checked. If every lookup came
   // back empty, a score of 0 is ignorance, not a clean bill of health.
-  const verifiedSomething = domainAgeDays !== null || input.cnpjRecord?.status === "ativa" || input.siteBlocklisted != null;
+  const verifiedSomething = domainAgeDays !== null || input.cnpjRecord?.status === "ativa";
 
   let verdict: Verdict;
   if (input.siteBlocklisted) verdict = "alto_risco";

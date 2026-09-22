@@ -24,13 +24,13 @@
     "message": "A few signals deserve attention before you continue."
   },
   "summary_alto_risco": {
-    "message": "Several strong scam signals on this site."
+    "message": "Risk signals require caution before you continue."
   },
   "summary_nao_verificado": {
     "message": "No check returned any data. That does not mean the site is safe."
   },
   "reason_blocklist": {
-    "message": "This site is on a known-scam list."
+    "message": "This hostname appears in the PhishDestroy phishing list."
   },
   "reason_pix_personal": {
     "message": "The payment goes to a person, not the company."
@@ -171,13 +171,13 @@
     "message": "Pix code unreadable"
   },
   "check_blocklist": {
-    "message": "Scam lists"
+    "message": "Phishing list"
   },
   "check_blocklist_unavailable": {
-    "message": "not available yet"
+    "message": "The phishing list could not be checked."
   },
   "check_blocklist_clean": {
-    "message": "not listed"
+    "message": "This hostname is not in this list. This does not guarantee safety."
   },
   "check_failed_rate_limited": {
     "message": "too many lookups, try again in a minute"
@@ -241,5 +241,14 @@
   },
   "see_reclame_aqui": {
     "message": "See reviews on Reclame Aqui"
+  },
+  "check_blocklist_stale": {
+    "message": "The cached list expired and its refresh failed. Check unavailable."
+  },
+  "check_blocklist_downloaded": {
+    "message": "copy downloaded on"
+  },
+  "check_blocklist_listed": {
+    "message": "This hostname appears in the phishing list."
   }
 }
