@@ -72,7 +72,7 @@ export function computeScore(input: ScoringInput): ScoreResult {
     }
   }
 
-  if (input.cnpjRecord && input.cnpjRecord.status !== "ativa") {
+  if (input.cnpjRecord && ["baixada", "inapta", "suspensa", "nula"].includes(input.cnpjRecord.status)) {
     add("cnpj_inactive", 45, "reason.cnpj_inactive");
   }
 
@@ -107,11 +107,13 @@ export function computeScore(input: ScoringInput): ScoreResult {
   }
   if (input.cnpjRecord?.status === "ativa") add("cnpj_active", 0, "reason.cnpj_active", "ok");
 
-  score = Math.max(0, Math.min(100, score));
+  // Reputation and age cannot erase the strongest observed warning.
+  const strongestWarning = Math.max(0, ...signals.filter(s => s.status === "alert").map(s => s.points));
+  score = Math.max(strongestWarning, Math.min(100, score));
 
   // "Low risk" has to mean something was actually checked. If every lookup came
   // back empty, a score of 0 is ignorance, not a clean bill of health.
-  const verifiedSomething = domainAgeDays !== null || input.cnpjRecord != null || input.siteBlocklisted != null;
+  const verifiedSomething = domainAgeDays !== null || input.cnpjRecord?.status === "ativa" || input.siteBlocklisted != null;
 
   let verdict: Verdict;
   if (input.siteBlocklisted) verdict = "alto_risco";

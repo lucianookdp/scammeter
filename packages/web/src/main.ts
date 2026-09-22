@@ -106,21 +106,7 @@ function setNeedle(score: number) {
 }
 
 function animateScore(target: number) {
-  // Write the real number first. requestAnimationFrame never fires in a
-  // backgrounded tab, so a result rendered there would otherwise sit on the
-  // placeholder until the tab came forward.
   scoreEl.textContent = String(target);
-  if (reduceMotion) return;
-
-  const start = performance.now();
-  const duration = 700;
-  function tick(now: number) {
-    const progress = Math.min(1, (now - start) / duration);
-    const eased = 1 - (1 - progress) ** 3;
-    scoreEl.textContent = String(Math.round(target * eased));
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
 }
 
 function setLoading(isLoading: boolean) {
@@ -175,10 +161,10 @@ function renderResult(result: ScoreResult, checks: CheckRow[]) {
         li.insertAdjacentHTML("afterbegin", ICONS[signal.status]);
         // Showing the weight is what turns the score from a verdict into
         // arithmetic the reader can follow.
-        if (signal.points > 0) {
+        if (signal.points !== 0) {
           const weight = document.createElement("span");
           weight.className = "reason-weight";
-          weight.textContent = `+${signal.points}`;
+          weight.textContent = `${signal.points > 0 ? "+" : ""}${signal.points}`;
           li.append(weight);
         }
         const text = document.createElement("span");
@@ -256,6 +242,7 @@ function failureText(failure: FetchFailure): string {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (submitBtn.disabled) return;
   linkError.hidden = true;
   scanHint.hidden = true;
 
@@ -266,132 +253,134 @@ form.addEventListener("submit", async (event) => {
     link = parsed.toString();
     domain = parsed.hostname;
   } catch (error) {
-    linkError.textContent = t(`error_${(error as Error).message}`);
+    const key = `error_${(error as Error).message}`;
+    linkError.textContent = t(key) === key ? "Cole um endereço válido, como exemplo.com.br." : t(key);
     linkError.hidden = false;
     return;
   }
 
-  setLoading(true);
-
   const cnpjValue = cnpjInput.value.trim();
   const pixValue = pixInput.value.trim();
-  // Nobody knows a company's CNPJ by heart — try to find it (and a Pix code,
-  // if one's sitting on the page) on the site itself before asking the user.
-  const needsScan = !cnpjValue || !pixValue;
-
-  const [scan, domainInfo, reputation] = await Promise.all([
-    needsScan ? fetchScan(link) : Promise.resolve(null),
-    fetchDomainInfo(domain),
-    fetchReputation(domain),
-  ]);
-
-  const checks: CheckRow[] = [];
-
-  let storeCnpj: string | null | undefined;
-  if (cnpjValue) {
-    // A CNPJ the person typed by hand is the one case where "not found" means
-    // "you mistyped it", so say that instead of scoring it as a missing CNPJ.
-    if (!validateCnpj(cnpjValue)) {
-      setLoading(false);
-      linkError.textContent = t("error_invalid_cnpj");
-      linkError.hidden = false;
-      return;
-    }
-    storeCnpj = cnpjValue;
-  } else if (scan?.data?.fetched) {
-    storeCnpj = scan.data.cnpj;
-    if (scan.data.cnpj) {
-      cnpjInput.value = formatCnpj(scan.data.cnpj);
-    } else {
-      showScanHint("scan_no_cnpj");
-    }
-  } else {
-    showScanHint("scan_unreachable");
+  if (cnpjValue && !validateCnpj(cnpjValue)) {
+    linkError.textContent = t("error_invalid_cnpj");
+    linkError.hidden = false;
+    return;
   }
+  setLoading(true);
+  try {
+    // Nobody knows a company's CNPJ by heart — try to find it (and a Pix code,
+    // if one's sitting on the page) on the site itself before asking the user.
+    const needsScan = !cnpjValue || !pixValue;
 
-  checks.push({
-    labelKey: "check_site",
-    value: scan?.data?.fetched
-      ? t("check_site_read")
-      : scan?.failure
-        ? failureText(scan.failure)
-        : cnpjValue && pixValue
-          ? t("check_site_skipped")
-          : t("check_site_unreachable"),
-    state: scan?.data?.fetched ? "ok" : "unverified",
-  });
+    const [scan, domainInfo, reputation] = await Promise.all([
+      needsScan ? fetchScan(link) : Promise.resolve(null),
+      fetchDomainInfo(domain),
+      fetchReputation(domain),
+    ]);
 
-  const pixPayload = pixValue || scan?.data?.pixPayload || "";
-  const parsedPix = pixPayload ? parsePixPayload(pixPayload) : null;
+    const checks: CheckRow[] = [];
 
-  const cnpjResult = storeCnpj ? await fetchCnpjRecord(storeCnpj) : undefined;
-  const cnpjRecord = cnpjResult?.data ?? undefined;
+    let storeCnpj: string | null | undefined;
+    if (cnpjValue) {
+      storeCnpj = cnpjValue;
+    } else if (scan?.data?.fetched) {
+      storeCnpj = scan.data.cnpj;
+      if (!scan.data.cnpj) {
+        showScanHint("scan_no_cnpj");
+      }
+    } else {
+      showScanHint("scan_unreachable");
+    }
 
-  const ageDays = domainInfo?.data?.ageDays ?? null;
-  checks.push({
-    labelKey: "check_domain",
-    value:
-      typeof ageDays === "number"
-        ? `${domain} · ${t("check_domain_age").replace("{age}", formatAge(ageDays))}`
-        : domainInfo?.failure
-          ? failureText(domainInfo.failure)
-          : t("check_domain_unknown"),
-    state: typeof ageDays === "number" ? "ok" : "unverified",
-  });
+    checks.push({
+      labelKey: "check_site",
+      value: scan?.data?.fetched
+        ? t("check_site_read")
+        : scan?.failure
+          ? failureText(scan.failure)
+          : cnpjValue && pixValue
+            ? t("check_site_skipped")
+            : t("check_site_unreachable"),
+      state: scan?.data?.fetched ? "ok" : "unverified",
+    });
 
-  checks.push({
-    labelKey: "check_cnpj",
-    value: cnpjRecord?.razaoSocial
-      ? `${cnpjRecord.razaoSocial} · ${formatCnpj(storeCnpj as string)} · ${CNPJ_STATUS_LABEL[cnpjRecord.status] ?? cnpjRecord.status}`
-      : storeCnpj
-        ? (cnpjResult?.failure ? failureText(cnpjResult.failure) : t("check_cnpj_unknown"))
-        : t("check_cnpj_none"),
-    state: cnpjRecord?.status === "ativa" ? "ok" : cnpjRecord ? "alert" : "unverified",
-  });
+    const pixPayload = pixValue || scan?.data?.pixPayload || "";
+    const parsedPix = pixPayload ? parsePixPayload(pixPayload) : null;
 
-  checks.push({
-    labelKey: "check_pix",
-    value: parsedPix?.merchantAccount?.key
-      ? t(`pix_key_${parsedPix.keyType}`)
-      : pixPayload
-        ? t("check_pix_unreadable")
-        : t("check_pix_none"),
-    state: parsedPix?.merchantAccount?.key ? (parsedPix.keyType === "cnpj" ? "ok" : "alert") : "unverified",
-  });
+    const cnpjResult = storeCnpj ? await fetchCnpjRecord(storeCnpj) : undefined;
+    const cnpjRecord = cnpjResult?.data ?? undefined;
 
-  checks.push({
-    labelKey: "check_blocklist",
-    value: reputation?.data?.blocklisted == null ? t("check_blocklist_unavailable") : t("check_blocklist_clean"),
-    state: "unverified",
-  });
+    const ageDays = domainInfo?.data?.ageDays ?? null;
+    checks.push({
+      labelKey: "check_domain",
+      value:
+        typeof ageDays === "number"
+          ? `${domain} · ${t("check_domain_age").replace("{age}", formatAge(ageDays))}`
+          : domainInfo?.failure
+            ? failureText(domainInfo.failure)
+            : t("check_domain_unknown"),
+      state: typeof ageDays === "number" ? "ok" : "unverified",
+    });
 
-  const input: ScoringInput = {
-    siteBlocklisted: reputation?.data?.blocklisted ?? undefined,
-    domainRankTop100k: reputation?.data?.top100k ?? undefined,
-    domainImitatesBrand: domainImitatesBrand(domain),
-    cheapTldPrivateWhois: hasCheapTld(domain),
-    storeCnpj,
-    cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
-    domainAgeDays: ageDays,
-    pix:
-      parsedPix?.merchantAccount?.key && parsedPix.keyType !== "unknown"
-        ? {
-            keyType: parsedPix.keyType,
-            keyCnpj: parsedPix.keyType === "cnpj" ? parsedPix.merchantAccount.key : undefined,
-          }
-        : undefined,
-  };
+    checks.push({
+      labelKey: "check_cnpj",
+      value: cnpjRecord?.razaoSocial
+        ? `${cnpjRecord.razaoSocial} · ${formatCnpj(storeCnpj as string)} · ${CNPJ_STATUS_LABEL[cnpjRecord.status] ?? cnpjRecord.status}`
+        : storeCnpj
+          ? (cnpjResult?.failure ? failureText(cnpjResult.failure) : t("check_cnpj_unknown"))
+          : t(scan?.data?.fetched ? "check_cnpj_none" : "check_cnpj_unknown"),
+      state: cnpjRecord?.status === "ativa" ? "ok" : cnpjRecord && ["baixada", "inapta", "suspensa", "nula"].includes(cnpjRecord.status) ? "alert" : "unverified",
+    });
 
-  setLoading(false);
-  renderResult(computeScore(input), checks);
-  showTransportProblem(
-    [scan?.failure, domainInfo?.failure, reputation?.failure, cnpjResult?.failure].filter(
-      (f): f is FetchFailure => Boolean(f),
-    ),
-  );
+    checks.push({
+      labelKey: "check_pix",
+      value: parsedPix?.merchantAccount?.key
+        ? t(`pix_key_${parsedPix.keyType}`)
+        : pixPayload
+          ? t("check_pix_unreadable")
+          : (scan?.data?.fetched ? t("check_pix_none") : "Não foi possível verificar se há Pix nesta página."),
+      state: parsedPix?.merchantAccount?.key ? (parsedPix.keyType === "cnpj" ? "ok" : "alert") : "unverified",
+    });
 
-  const searchTerm = cnpjRecord?.razaoSocial ?? domain;
-  factRaEl.href = `https://www.google.com/search?q=${encodeURIComponent(`${searchTerm} reclame aqui`)}`;
-  factRaTextEl.textContent = t("see_reclame_aqui");
-  factRaEl.hidden = false;
+    checks.push({
+      labelKey: "check_blocklist",
+      value: reputation?.data?.blocklisted == null ? t("check_blocklist_unavailable") : t("check_blocklist_clean"),
+      state: "unverified",
+    });
+
+    const input: ScoringInput = {
+      siteBlocklisted: reputation?.data?.blocklisted ?? undefined,
+      domainRankTop100k: reputation?.data?.top100k ?? undefined,
+      domainImitatesBrand: domainImitatesBrand(domain),
+      cheapTldPrivateWhois: hasCheapTld(domain),
+      storeCnpj,
+      cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
+      domainAgeDays: ageDays,
+      pix:
+        parsedPix?.merchantAccount?.key && parsedPix.keyType !== "unknown"
+          ? {
+              keyType: parsedPix.keyType,
+              keyCnpj: parsedPix.keyType === "cnpj" ? parsedPix.merchantAccount.key : undefined,
+            }
+          : undefined,
+    };
+
+    setLoading(false);
+    renderResult(computeScore(input), checks);
+    showTransportProblem(
+      [scan?.failure, domainInfo?.failure, reputation?.failure, cnpjResult?.failure].filter(
+        (f): f is FetchFailure => Boolean(f),
+      ),
+    );
+
+    const searchTerm = cnpjRecord?.razaoSocial ?? domain;
+    factRaEl.href = `https://www.google.com/search?q=${encodeURIComponent(`${searchTerm} reclame aqui`)}`;
+    factRaTextEl.textContent = t("see_reclame_aqui");
+    factRaEl.hidden = false;
+  } catch {
+    alertBar.textContent = t("transport_degraded");
+    alertBar.hidden = false;
+  } finally {
+    setLoading(false);
+  }
 });
