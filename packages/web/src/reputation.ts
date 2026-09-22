@@ -9,7 +9,7 @@ export function reputationCheck(data: ReputationResult | null, failure: FetchFai
   }
   const date = data.fetchedAt ? new Date(data.fetchedAt) : null;
   const downloaded = date && Number.isFinite(date.getTime())
-    ? ` · ${t("check_blocklist_downloaded")} ${date.toLocaleString("pt-BR")}` : "";
+    ? ` · ${t("check_blocklist_downloaded")} ${date.toISOString().slice(0, 19).replace("T", " ") + " UTC"}` : "";
   return {
     value: `${t(data.blocklisted ? "check_blocklist_listed" : "check_blocklist_clean")} · PhishDestroy${downloaded}`,
     state: data.blocklisted ? "alert" : "unverified",

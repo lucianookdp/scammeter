@@ -9,7 +9,7 @@ describe("reputation presentation", () => {
   it("shows a listed address as an alert with attribution", () => {
     expect(reputationCheck(result, null)).toMatchObject({ state: "alert" });
     expect(reputationCheck(result, null).value).toContain("PhishDestroy");
-    expect(reputationCheck(result, null).value).toContain("cópia obtida");
+    expect(reputationCheck(result, null).value).toContain("cópia obtida em 2026-09-22 00:00:00 UTC");
   });
   it("does not label absence as safe", () => {
     const check = reputationCheck({ ...result, blocklisted: false, match: null }, null);
