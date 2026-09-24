@@ -56,6 +56,27 @@
   "reason_cnpj_active": {
     "message": "CNPJ ativo na Receita Federal."
   },
+  "reason_cnpj_new": {
+    "message": "A empresa do CNPJ foi aberta há menos de 6 meses."
+  },
+  "reason_combo_cnpj_domain_new": {
+    "message": "Agravante: empresa e site abertos há pouco tempo."
+  },
+  "reason_company_name_mismatch": {
+    "message": "O CNPJ pertence a outro nome. Confira se é mesmo desta loja."
+  },
+  "reason_company_name_mismatch_named": {
+    "message": "O CNPJ pertence a {company}, nome diferente do site. Confira se é mesmo desta loja."
+  },
+  "reason_title_brand": {
+    "message": "A página se apresenta como uma marca conhecida, mas o endereço não é o dela."
+  },
+  "reason_title_brand_named": {
+    "message": "A página se apresenta como {brand}, mas o endereço não é o de {brand}."
+  },
+  "reason_credentials_under_brand": {
+    "message": "A página pede senha ou dados de cartão usando o nome de uma marca que não é dela."
+  },
   "reason_domain_new": {
     "message": "Este site foi criado há menos de 30 dias."
   },
@@ -69,7 +90,7 @@
     "message": "Este site foi criado há menos de 1 ano."
   },
   "reason_no_track_record": {
-    "message": "Site recente e sem nada que comprove sua reputação: não é popular, não é antigo e não mostra um CNPJ ativo."
+    "message": "Site recente e sem nada que comprove sua reputação: não é popular, não é antigo e não mostra uma empresa aberta há mais de um ano."
   },
   "reason_brand_lookalike": {
     "message": "O endereço usa o nome de uma marca conhecida, mas não é o site oficial."

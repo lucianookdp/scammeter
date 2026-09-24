@@ -37,6 +37,14 @@ export interface ScoringInput {
   ipHost?: boolean;
   cheapTldPrivateWhois?: boolean;
 
+  // Read off the page — see titleImpersonation() and pageAsksCredentials().
+  /** The brand the page title claims while the address isn't that brand's. */
+  titleBrand?: string;
+  /** The page has a password or card field. */
+  asksCredentials?: boolean;
+  /** The CNPJ's company name has nothing in common with the address. */
+  companyNameMismatch?: boolean;
+
   // Page-content signals — optional because they depend on heuristics the
   // proxy may not have computed yet (CNAE taxonomy, WHOIS privacy).
   registrantMismatch?: boolean;
@@ -72,6 +80,13 @@ export interface ScoreResult {
 function usableAgeDays(days: number | null | undefined): number | null {
   if (typeof days !== "number" || !Number.isFinite(days) || days < 0) return null;
   return days;
+}
+
+/** Days since a "YYYY-MM-DD" date such as a CNPJ's opening date, or null. */
+function daysSince(isoDate: string | undefined): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(isoDate ?? "");
+  if (!m) return null;
+  return usableAgeDays(Math.floor((Date.now() - Date.UTC(+m[1], +m[2] - 1, +m[3])) / 86_400_000));
 }
 
 export function computeScore(input: ScoringInput): ScoreResult {
@@ -111,6 +126,15 @@ export function computeScore(input: ScoringInput): ScoreResult {
 
   if (input.cnpjRecord && ["baixada", "inapta", "suspensa", "nula"].includes(input.cnpjRecord.status)) {
     add("cnpj_inactive", 45, "reason.cnpj_inactive");
+  }
+  const cnpjActive = input.cnpjRecord?.status === "ativa";
+  const cnpjAgeDays = daysSince(input.cnpjRecord?.abertura);
+  // Fake shops often open a company weeks before the site goes up. Plenty of
+  // real ones do too, so it only weighs much next to a brand-new domain.
+  const cnpjNew = cnpjActive && cnpjAgeDays !== null && cnpjAgeDays < 180;
+  if (cnpjNew) add("cnpj_new", 15, "reason.cnpj_new");
+  if (input.companyNameMismatch && input.cnpjRecord?.razaoSocial && !input.officialBrand && !input.restrictedTld) {
+    add("company_name_mismatch", 0, "reason.company_name_mismatch", "unverified", { company: input.cnpjRecord.razaoSocial });
   }
 
   // Most sites on the web have no reason to publish a CNPJ — a foreign site, a
@@ -158,6 +182,19 @@ export function computeScore(input: ScoringInput): ScoreResult {
   if (wearsBrand && shared) add("combo_brand_hosting", 25, "reason.combo_brand_hosting");
   if (wearsBrand && input.suspiciousKeywords) add("combo_brand_bait", 15, "reason.combo_brand_bait");
   if (input.cheapTldPrivateWhois && young) add("combo_cheap_new", 15, "reason.combo_cheap_new");
+  if (cnpjNew && young) add("combo_cnpj_domain_new", 10, "reason.combo_cnpj_domain_new");
+
+  // A title claiming a brand the address doesn't carry. Old and popular sites
+  // name brands in headlines and products all the time, and an official
+  // domain can name its sister brand ("Mercado Pago" on mercadolivre.com.br).
+  const titleBrand =
+    input.titleBrand && !wearsBrand && !established && !popular && !input.officialBrand && !input.restrictedTld
+      ? input.titleBrand
+      : undefined;
+  if (titleBrand) add("title_brand", 35, "reason.title_brand", "alert", { brand: titleBrand });
+  // Asking for a password or card while wearing someone else's name is what a
+  // phishing page is for.
+  if ((wearsBrand || titleBrand) && input.asksCredentials) add("credentials_under_brand", 25, "reason.credentials_under_brand");
 
   const official = Boolean(input.officialBrand) && !shared;
   if (official) add("official_domain", -100, "reason.official_domain", "ok", { brand: input.officialBrand! });
@@ -170,7 +207,6 @@ export function computeScore(input: ScoringInput): ScoreResult {
     if (domainAgeDays > 5 * 365) add("domain_established", -25, "reason.domain_established", "ok");
     else if (established) add("domain_mature", -10, "reason.domain_mature", "ok");
   }
-  const cnpjActive = input.cnpjRecord?.status === "ativa";
   if (cnpjActive) add("cnpj_active", 0, "reason.cnpj_active", "ok");
 
   // Reputation and age cannot erase the strongest observed warning.
@@ -180,8 +216,10 @@ export function computeScore(input: ScoringInput): ScoreResult {
   // "Low risk" has to mean something was actually checked. If every lookup came
   // back empty, a score of 0 is ignorance, not a clean bill of health.
   const verifiedSomething = domainAgeDays !== null || cnpjActive || official || Boolean(input.restrictedTld) || popular;
+  // A company opened last month is registered, not established.
+  const cnpjEstablished = cnpjActive && (cnpjAgeDays === null || cnpjAgeDays >= 365);
   const hasTrackRecord =
-    official || Boolean(input.restrictedTld) || popular || cnpjActive || (domainAgeDays !== null && domainAgeDays >= 365);
+    official || Boolean(input.restrictedTld) || popular || cnpjEstablished || (domainAgeDays !== null && domainAgeDays >= 365);
 
   // A months-old site with nothing to vouch for it is not "low risk" just
   // because nothing damning turned up yet.

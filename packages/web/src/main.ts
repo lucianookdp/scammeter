@@ -1,9 +1,11 @@
 import {
   analyzeHostname,
+  companyMatchesHost,
   computeScore,
   formatCnpj,
   parsePixPayload,
   reasonText,
+  titleImpersonation,
   validateCnpj,
   type CheckStatus,
   type CnpjRecord,
@@ -362,6 +364,11 @@ form.addEventListener("submit", async (event) => {
       storeCnpj,
       cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
       domainAgeDays: ageDays,
+      titleBrand: titleImpersonation(scan?.data?.title, domain) ?? undefined,
+      asksCredentials: scan?.data?.asksCredentials,
+      companyNameMismatch: cnpjRecord?.razaoSocial
+        ? !companyMatchesHost([cnpjRecord.razaoSocial, cnpjRecord.nomeFantasia], domain)
+        : undefined,
       pix:
         parsedPix?.merchantAccount?.key && parsedPix.keyType !== "unknown"
           ? {
