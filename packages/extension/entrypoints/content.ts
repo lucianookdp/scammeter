@@ -1,10 +1,13 @@
 import { browser } from "wxt/browser";
 import {
   analyzeHostname,
+  companyMatchesHost,
   computeScore,
   findPixPayloadInText,
   findValidCnpjInText,
+  pageAsksCredentials,
   parsePixPayload,
+  titleImpersonation,
   type ScoreResult,
   type ScoringInput,
 } from "@scammeter/core";
@@ -19,7 +22,8 @@ export default defineContentScript({
     const bodyText = (document.body?.innerText ?? "").slice(0, MAX_TEXT_LENGTH);
     const storeCnpj = findValidCnpjInText(bodyText);
 
-    const pixPayload = findPixPayloadInText(document.documentElement.innerHTML.slice(0, MAX_TEXT_LENGTH));
+    const html = document.documentElement.innerHTML.slice(0, MAX_TEXT_LENGTH);
+    const pixPayload = findPixPayloadInText(html);
     const parsedPix = pixPayload ? parsePixPayload(pixPayload) : null;
 
     const domain = location.hostname;
@@ -38,6 +42,11 @@ export default defineContentScript({
       storeCnpj,
       cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
       domainAgeDays: domainInfo?.ageDays ?? null,
+      titleBrand: titleImpersonation(document.title, domain) ?? undefined,
+      asksCredentials: pageAsksCredentials(html),
+      companyNameMismatch: cnpjRecord?.razaoSocial
+        ? !companyMatchesHost([cnpjRecord.razaoSocial, cnpjRecord.nomeFantasia], domain)
+        : undefined,
       pix:
         parsedPix?.merchantAccount?.key && parsedPix.keyType !== "unknown"
           ? {

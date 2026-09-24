@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type { FastifyInstance } from "fastify";
-import { findValidCnpjInText, findPixPayloadInText } from "@scammeter/core";
+import { findValidCnpjInText, findPixPayloadInText, pageAsksCredentials, pageTitle } from "@scammeter/core";
 import { PROXY_USER_AGENT } from "../userAgent.js";
 import { resolvesToPrivateIp } from "../ssrf.js";
 import { TtlCache } from "../cache.js";
@@ -25,6 +25,8 @@ interface ScanResult {
   fetched: boolean;
   cnpj: string | null;
   pixPayload: string | null;
+  title: string | null;
+  asksCredentials: boolean;
 }
 
 const MAX_URL_LENGTH = 2048;
@@ -123,8 +125,14 @@ export function registerScanRoute(app: FastifyInstance) {
     const html = await safeFetchHtml(target);
     const result: ScanResult =
       html === null
-        ? { fetched: false, cnpj: null, pixPayload: null }
-        : { fetched: true, cnpj: findValidCnpjInText(html), pixPayload: findPixPayloadInText(html) };
+        ? { fetched: false, cnpj: null, pixPayload: null, title: null, asksCredentials: false }
+        : {
+            fetched: true,
+            cnpj: findValidCnpjInText(html),
+            pixPayload: findPixPayloadInText(html),
+            title: pageTitle(html),
+            asksCredentials: pageAsksCredentials(html),
+          };
 
     cache.set(cacheKey, result);
     return { ...result, cached: false };
