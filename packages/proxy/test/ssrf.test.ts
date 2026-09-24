@@ -55,6 +55,23 @@ describe("isPrivateIp — the ranges an SSRF probe actually reaches for", () => 
     expect(isPrivateIp("::ffff:8.8.8.8")).toBe(false);
   });
 
+  it("sees through the hex spelling the URL parser actually produces", () => {
+    // new URL("http://[::ffff:169.254.169.254]/").hostname is "[::ffff:a9fe:a9fe]":
+    // matching only the dotted form let these straight through to the fetch.
+    for (const raw of [
+      "http://[::ffff:127.0.0.1]/",
+      "http://[::ffff:169.254.169.254]/",
+      "http://[::ffff:10.0.0.1]/",
+      "http://[0:0:0:0:0:ffff:7f00:1]/",
+      "http://[::127.0.0.1]/",
+      "http://[64:ff9b::a9fe:a9fe]/",
+      "http://[fe90::1]/",
+    ]) {
+      expect(isPrivateIp(new URL(raw).hostname.slice(1, -1)), raw).toBe(true);
+    }
+    expect(isPrivateIp(new URL("http://[::ffff:8.8.8.8]/").hostname.slice(1, -1))).toBe(false);
+  });
+
   it("blocks the unspecified address and IPv6 unique-local and multicast", () => {
     expect(isPrivateIp("::")).toBe(true);
     expect(isPrivateIp("fd00::1")).toBe(true);
@@ -83,6 +100,7 @@ describe("resolvesToPrivateIp", () => {
     // `new URL("http://[::1]/").hostname` is "[::1]", which is not a parseable
     // IP — without unwrapping it fell through to a DNS lookup by accident.
     await expect(resolvesToPrivateIp("[::1]")).resolves.toBe(true);
+    await expect(resolvesToPrivateIp(new URL("http://[::ffff:127.0.0.1]/").hostname)).resolves.toBe(true);
   });
 
   it("blocks a hostname that cannot be resolved at all", async () => {
