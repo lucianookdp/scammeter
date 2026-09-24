@@ -8,6 +8,7 @@
   --green: #1f7a4d;
   --amber: #a8701e;
   --red: #b5382f;
+  --crimson: #7d1a14;
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
@@ -21,6 +22,7 @@
   --green: #35b47c;
   --amber: #d69a3f;
   --red: #d85c50;
+  --crimson: #ff7b6e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,6 +35,7 @@
     --green: #35b47c;
     --amber: #d69a3f;
     --red: #d85c50;
+    --crimson: #ff7b6e;
   }
 }
 
@@ -107,8 +110,13 @@ body {
     display: grid;
     grid-template-columns: minmax(260px, 21rem) minmax(0, 42rem);
     column-gap: 56px;
-    grid-template-areas: "intro card";
+    grid-template-areas:
+      "intro card"
+      "more more";
     align-items: start;
+  }
+  .more {
+    grid-area: more;
   }
   .intro {
     grid-area: intro;
@@ -273,7 +281,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--green), var(--amber) 50%, var(--red));
+  background: linear-gradient(90deg, var(--green), var(--amber) 35%, var(--red) 65%, var(--crimson));
 }
 
 /* Gauge */
@@ -310,6 +318,9 @@ body {
 }
 .zone-high {
   stroke: var(--red);
+}
+.zone-vhigh {
+  stroke: var(--crimson);
 }
 
 .gauge.idle .zone {
@@ -404,6 +415,9 @@ body {
 .score-alto_risco {
   color: var(--red);
 }
+.score-muito_alto_risco {
+  color: var(--crimson);
+}
 .score-nao_verificado {
   color: var(--ink-muted);
 }
@@ -428,6 +442,17 @@ body {
 .badge-alto_risco {
   background: var(--red);
 }
+.badge-muito_alto_risco {
+  background: var(--crimson);
+}
+:root[data-theme="dark"] .badge-muito_alto_risco {
+  color: #1b0907;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .badge-muito_alto_risco {
+    color: #1b0907;
+  }
+}
 .badge-nao_verificado {
   background: var(--ink-muted);
 }
@@ -438,6 +463,46 @@ body {
   font-size: 0.9375rem;
   text-align: center;
   min-height: 1.3em;
+}
+
+/* The legend: which number means what, before anyone has to guess. */
+.scale {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+.scale li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.scale li::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+.scale-range {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+.scale-low::before {
+  background: var(--green);
+}
+.scale-mid::before {
+  background: var(--amber);
+}
+.scale-high::before {
+  background: var(--red);
+}
+.scale-vhigh::before {
+  background: var(--crimson);
 }
 
 /* Form */
@@ -707,6 +772,14 @@ button:disabled {
   color: var(--amber);
 }
 
+.score-explanation {
+  grid-column: 1 / -1;
+  margin: 24px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
 /* A failed lookup has to look different from a clean result. */
 .alertbar {
   margin: 20px 0 0;
@@ -747,6 +820,131 @@ button:disabled {
 }
 .fact-link:hover {
   text-decoration: underline;
+}
+
+/* Below the tool: how it works, what it checks, and what to do next. */
+
+.more {
+  display: grid;
+  gap: 20px;
+  margin-top: 32px;
+}
+@media (min-width: 900px) {
+  .more {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 48px;
+  }
+  .more .info-block:nth-child(2) {
+    grid-row: span 2;
+  }
+  .more .info-help {
+    grid-column: 1 / -1;
+  }
+}
+
+.info-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+.info-block h2 {
+  margin: 0 0 16px;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.info-block h3 {
+  margin: 0 0 2px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.info-block p,
+.info-block li {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.info-block p {
+  margin: 0;
+  color: var(--ink-muted);
+}
+.info-block a {
+  color: var(--green);
+}
+
+.steps,
+.features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+.steps li,
+.features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.step-num {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--green) 14%, transparent);
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+.features svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.signs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.signs li {
+  position: relative;
+  padding: 9px 0 9px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.signs li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 16px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--amber);
+}
+
+.info-help {
+  border-color: color-mix(in srgb, var(--red) 35%, var(--border));
+}
+.help-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+}
+.help-steps li::marker {
+  color: var(--red);
+  font-family: var(--font-mono);
 }
 
 .footnote {

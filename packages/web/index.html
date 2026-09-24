@@ -112,9 +112,10 @@
       <div class="card">
         <section class="gauge-panel">
           <svg class="gauge idle" viewBox="0 0 200 112" role="img" aria-label="Medidor de risco">
-            <path class="zone zone-low" d="M20,100 A80,80 0 0 1 33.9,54.92" />
-            <path class="zone zone-mid" d="M33.9,54.92 A80,80 0 0 1 97.49,20.04" />
-            <path class="zone zone-high" d="M97.49,20.04 A80,80 0 0 1 180,100" />
+            <path class="zone zone-low" d="M20,100 A80,80 0 0 1 28.72,63.68" />
+            <path class="zone zone-mid" d="M28.72,63.68 A80,80 0 0 1 75.28,23.92" />
+            <path class="zone zone-high" d="M75.28,23.92 A80,80 0 0 1 147.02,35.28" />
+            <path class="zone zone-vhigh" d="M147.02,35.28 A80,80 0 0 1 180,100" />
             <g class="needle-group">
               <line class="needle" x1="100" y1="100" x2="100" y2="32" />
             </g>
@@ -126,6 +127,12 @@
             <span id="badge" class="badge"></span>
           </div>
           <p id="gauge-caption" class="gauge-caption" aria-live="polite"></p>
+          <ul class="scale" aria-label="Escala do score">
+            <li class="scale-low"><span class="scale-range">0–14</span> Baixo</li>
+            <li class="scale-mid"><span class="scale-range">15–39</span> Atenção</li>
+            <li class="scale-high"><span class="scale-range">40–69</span> Alto</li>
+            <li class="scale-vhigh"><span class="scale-range">70–100</span> Muito alto</li>
+          </ul>
         </section>
 
         <form id="check-form" novalidate>
@@ -177,7 +184,7 @@
         <p id="alertbar" class="alertbar" role="status" hidden></p>
 
         <div id="results" class="results" hidden>
-          <p class="score-explanation" style="grid-column: 1 / -1">O score indica sinais de risco, não a probabilidade de golpe. Idade e popularidade não apagam o alerta mais forte. Dados indisponíveis não comprovam segurança.</p>
+          <p class="score-explanation">O score soma sinais de risco; não é uma porcentagem nem a probabilidade de golpe. Idade e popularidade não apagam o alerta mais forte, e um site sem nenhum histórico não aparece como baixo risco. Dados indisponíveis não comprovam segurança.</p>
           <section class="group" id="group-alert" hidden>
             <h3 class="group-title group-title-alert"></h3>
             <ul class="reasons"></ul>
@@ -195,6 +202,7 @@
             <h3 class="group-title"></h3>
             <dl class="checks"></dl>
             <a class="fact fact-link" href="https://github.com/phishdestroy/destroylist" target="_blank" rel="noopener noreferrer">Fonte: PhishDestroy · consultar a lista e reportar erros</a>
+            <a class="fact fact-link" href="https://tranco-list.eu/" target="_blank" rel="noopener noreferrer">Popularidade: lista Tranco</a>
           </section>
 
           <a id="fact-reclameaqui" class="fact fact-link" hidden target="_blank" rel="noopener noreferrer">
@@ -208,6 +216,101 @@
         </div>
       </div>
 
+      <div class="more">
+        <section class="info-block" aria-labelledby="how-title">
+          <h2 id="how-title">Como funciona</h2>
+          <ol class="steps">
+            <li>
+              <span class="step-num">1</span>
+              <div>
+                <h3>Cole o link</h3>
+                <p>O endereço da loja, de um anúncio ou de uma mensagem que você recebeu por SMS, e-mail ou WhatsApp.</p>
+              </div>
+            </li>
+            <li>
+              <span class="step-num">2</span>
+              <div>
+                <h3>Cruzamos dados públicos</h3>
+                <p>Idade do domínio, CNPJ na Receita Federal, chave Pix, listas de phishing, popularidade e o próprio endereço.</p>
+              </div>
+            </li>
+            <li>
+              <span class="step-num">3</span>
+              <div>
+                <h3>Você vê o porquê</h3>
+                <p>Cada ponto do score vem com a explicação. Sem nota misteriosa: dá para conferir a conta.</p>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        <section class="info-block" aria-labelledby="checks-title">
+          <h2 id="checks-title">O que verificamos</h2>
+          <ul class="features">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+              <div><h3>Idade do domínio</h3><p>Lojas falsas costumam ter semanas ou poucos meses de vida. O risco diminui ao longo do primeiro ano.</p></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+              <div><h3>CNPJ na Receita</h3><p>Se a empresa citada no site existe e está ativa.</p></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>
+              <div><h3>Chave Pix</h3><p>Se o dinheiro vai para a empresa do site ou para uma pessoa física.</p></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><path d="M7 7h.01"/></svg>
+              <div><h3>Imitação de marca</h3><p>Nomes como “magazineluiza-ofertas” e letras trocadas como “mercadolivrre” ou “nubamk”.</p></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <div><h3>Lista de phishing</h3><p>Endereços já denunciados na lista pública PhishDestroy.</p></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+              <div><h3>Popularidade</h3><p>Se o site está entre os 100 mil mais acessados do mundo, pela lista Tranco.</p></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+              <div><h3>Endereços baratos e plataformas gratuitas</h3><p>Terminações como .shop e .xyz, e páginas em serviços como vercel.app, onde qualquer pessoa cria um site em minutos.</p></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10"/><path d="M19 21V10"/><path d="M9 21v-7"/><path d="M15 21v-7"/><path d="m2 10 10-7 10 7"/></svg>
+              <div><h3>Sites oficiais e domínios restritos</h3><p>Endereços oficiais de marcas conhecidas e terminações como .gov.br, .jus.br e .b.br, que só instituições comprovadas registram.</p></div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="info-block" aria-labelledby="signs-title">
+          <h2 id="signs-title">Sinais comuns de golpe</h2>
+          <ul class="signs">
+            <li>Preço muito abaixo do normal, com contagem regressiva ou “últimas unidades”.</li>
+            <li>Pagamento só por Pix, para um CPF ou para o nome de uma pessoa.</li>
+            <li>Contato só por WhatsApp, sem endereço, sem CNPJ e sem política de troca.</li>
+            <li>Mensagem pedindo para “regularizar”, “liberar”, “atualizar” ou pagar uma “taxa” com urgência.</li>
+            <li>Endereço parecido com o de uma marca famosa, com hífens, palavras extras ou letras trocadas.</li>
+            <li>Pedido de senha, código recebido por SMS ou dados do cartão fora do app oficial.</li>
+          </ul>
+        </section>
+
+        <section class="info-block info-help" aria-labelledby="help-title">
+          <h2 id="help-title">Caí em um golpe, e agora?</h2>
+          <ol class="help-steps">
+            <li><strong>Ligue para o seu banco agora.</strong> Se pagou por Pix, peça a contestação pelo MED (Mecanismo Especial de Devolução). Se foi no cartão, peça o bloqueio e a contestação da compra. Quanto antes, maior a chance de recuperar o dinheiro.</li>
+            <li><strong>Registre um boletim de ocorrência.</strong> Na maioria dos estados dá para fazer pela internet, na delegacia virtual.</li>
+            <li><strong>Proteja suas contas.</strong> Se digitou alguma senha no site, troque-a e ative a verificação em duas etapas.</li>
+            <li><strong>Guarde as provas.</strong> Prints, comprovantes, conversas e o endereço do site.</li>
+            <li>
+              <strong>Denuncie para proteger outras pessoas:</strong>
+              <a href="https://safebrowsing.google.com/safebrowsing/report_phish/?hl=pt-BR" target="_blank" rel="noopener noreferrer">Google Safe Browsing</a>,
+              <a href="https://new.safernet.org.br/denuncie" target="_blank" rel="noopener noreferrer">SaferNet</a>,
+              <a href="https://www.consumidor.gov.br/" target="_blank" rel="noopener noreferrer">consumidor.gov.br</a> e
+              <a href="https://www.reclameaqui.com.br/" target="_blank" rel="noopener noreferrer">Reclame Aqui</a>.
+            </li>
+          </ol>
+        </section>
+      </div>
     </main>
 
     <footer class="site-footer">

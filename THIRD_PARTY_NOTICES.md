@@ -28,3 +28,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Tranco list
+
+Source: https://tranco-list.eu/
+
+Scammeter downloads the latest `top-1m.csv.zip` once a day and keeps the top
+100,000 registrable domains in server memory, to credit popular sites. The list
+is a research ranking and can include domains that are popular for bad reasons.
+
+Le Pochat, V., Van Goethem, T., Tajalizadehkhoob, S., Korczyński, M., & Joosen,
+W. (2019). Tranco: A Research-Oriented Top Sites Ranking Hardened Against
+Manipulation. Proceedings of the 26th Annual Network and Distributed System
+Security Symposium (NDSS 2019).
