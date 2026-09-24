@@ -45,4 +45,10 @@ describe("extractCnpjCandidates / findValidCnpjInText", () => {
     expect(findValidCnpjInText("Fale conosco pelo WhatsApp")).toBeNull();
     expect(findValidCnpjInText("CNPJ: 11.222.333/0001-00")).toBeNull();
   });
+
+  it("ignores an unlabelled bare number, such as a product code in a URL", () => {
+    // 10113806884501 passes the check digits; it was a SKU on a VTEX store.
+    expect(findValidCnpjInText('"https://x.vtexassets.com/ids/1/10113806884501-calca"')).toBeNull();
+    expect(findValidCnpjInText("CNPJ nº 11222333000181")).toBe("11222333000181");
+  });
 });

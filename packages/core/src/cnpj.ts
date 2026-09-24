@@ -58,10 +58,17 @@ export function extractCnpjCandidates(text: string): string[] {
   return result;
 }
 
-/** First checksum-valid CNPJ found in text, or null if none / none valid. */
+const CNPJ_MASK = /^[A-Z0-9]{2}\.[A-Z0-9]{3}\.[A-Z0-9]{3}\/[A-Z0-9]{4}-\d{2}$/i;
+
+/**
+ * First checksum-valid CNPJ found in text, or null if none / none valid.
+ * A bare 14-character run only counts right after the word "CNPJ": raw HTML is
+ * full of product codes and IDs, and about 1 in 100 passes the check digits.
+ */
 export function findValidCnpjInText(text: string): string | null {
-  for (const candidate of extractCnpjCandidates(text)) {
-    if (validateCnpj(candidate)) return candidate;
+  for (const m of text.matchAll(CNPJ_PATTERN)) {
+    const labelled = CNPJ_MASK.test(m[0]) || /cnpj/i.test(text.slice(Math.max(0, m.index - 30), m.index));
+    if (labelled && validateCnpj(m[0])) return normalizeCnpj(m[0]);
   }
   return null;
 }
