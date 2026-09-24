@@ -56,6 +56,27 @@
   "reason_cnpj_active": {
     "message": "Tax ID active with the federal revenue service."
   },
+  "reason_cnpj_new": {
+    "message": "The company behind the CNPJ was opened less than 6 months ago."
+  },
+  "reason_combo_cnpj_domain_new": {
+    "message": "Aggravating: both the company and the site are brand new."
+  },
+  "reason_company_name_mismatch": {
+    "message": "The CNPJ belongs to a different name. Check that it really is this store's."
+  },
+  "reason_company_name_mismatch_named": {
+    "message": "The CNPJ belongs to {company}, a name unlike the site's. Check that it really is this store's."
+  },
+  "reason_title_brand": {
+    "message": "The page presents itself as a well-known brand, but the address isn't that brand's."
+  },
+  "reason_title_brand_named": {
+    "message": "The page presents itself as {brand}, but the address isn't {brand}'s."
+  },
+  "reason_credentials_under_brand": {
+    "message": "The page asks for a password or card details under a brand name that isn't its own."
+  },
   "reason_domain_new": {
     "message": "This site was created less than 30 days ago."
   },
@@ -69,7 +90,7 @@
     "message": "This site was created less than a year ago."
   },
   "reason_no_track_record": {
-    "message": "A recent site with nothing to vouch for it: not popular, not old, and no active company registration."
+    "message": "A recent site with nothing to vouch for it: not popular, not old, and no company registered for over a year."
   },
   "reason_brand_lookalike": {
     "message": "The address uses a well-known brand's name but isn't its official site."

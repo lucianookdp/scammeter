@@ -246,6 +246,56 @@ export function officialBrandFor(hostname: string): string | null {
   return brand ? brand.name : null;
 }
 
+function foldAccents(text: string): string {
+  return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
+/**
+ * The brand a page title claims to be when the address isn't that brand's:
+ * "Nubank - Acesse sua conta" on atendimento-online24.com. The brand has to
+ * be a whole title segment, or lead the first one, so "Capinha para Samsung
+ * e Nubank" doesn't count. Ambiguous brands ("Caixa de som") never do.
+ */
+export function titleImpersonation(title: string | null | undefined, hostname: string): string | null {
+  if (!title) return null;
+  const registrable = registrableDomain(hostname.toLowerCase().replace(/\.$/, ""));
+  const segments = foldAccents(title)
+    .split(/\s+[-|:·–—]\s+|\s*[|·–—]\s*|:\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  for (const brand of BRANDS) {
+    if (brand.ambiguous || brand.official.some((d) => endsWithDomain(registrable, d))) continue;
+    const name = foldAccents(brand.name);
+    if (segments.some((s, i) => s === name || s === brand.token || (i === 0 && s.startsWith(`${name} `)))) {
+      return brand.name;
+    }
+  }
+  return null;
+}
+
+// Words any company name may carry; matching on them would tie "Lojas Pompéia"
+// to every lojas-something.com.br.
+const GENERIC_NAME_WORDS = new Set([
+  "ltda", "eireli", "comercio", "comercial", "servicos", "industria", "brasil", "brasileira", "artigos",
+  "produtos", "vestuario", "participacoes", "empreendimentos", "importacao", "exportacao", "distribuidora",
+  "tecnologia", "digital", "online", "store", "loja", "lojas", "moda", "varejo", "holding", "grupo",
+  "instituicao", "pagamento", "pagamentos", "financeira", "sociedade", "limitada", "company",
+]);
+
+/**
+ * Whether the company behind a CNPJ plausibly runs this address: a distinctive
+ * word of its name in the domain, or the domain's name inside the company's.
+ * Real stores often trade under a name that isn't their legal one, so a
+ * mismatch is a note for the reader to check, never evidence by itself.
+ */
+export function companyMatchesHost(companyNames: Array<string | undefined>, hostname: string): boolean {
+  const label = registrableDomain(hostname).split(".")[0].replace(/-/g, "");
+  const folded = companyNames.map((n) => foldAccents(n ?? ""));
+  const words = folded.flatMap((n) => n.split(/[^a-z0-9]+/)).filter((w) => w.length >= 4 && !GENERIC_NAME_WORDS.has(w));
+  const glued = folded.map((n) => n.replace(/[^a-z0-9]/g, ""));
+  return words.some((w) => label.includes(w)) || (label.length >= 4 && glued.some((n) => n.includes(label)));
+}
+
 export function hasCheapTld(hostname: string): boolean {
   const tld = hostname.toLowerCase().split(".").pop() ?? "";
   return CHEAP_TLDS.has(tld);
