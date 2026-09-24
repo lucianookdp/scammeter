@@ -374,7 +374,9 @@ form.addEventListener("submit", async (event) => {
     setLoading(false);
     renderResult(computeScore(input), checks);
     showTransportProblem(
-      [scan?.failure, domainInfo?.failure, reputation?.failure, popularity?.failure, cnpjResult?.failure].filter(
+      // A proxy without the popularity route (404) only means no ranking
+      // credit; it isn't a failed check worth a warning on every result.
+      [scan?.failure, domainInfo?.failure, reputation?.failure, popularity.failure === "not_found" ? null : popularity.failure, cnpjResult?.failure].filter(
         (f): f is FetchFailure => Boolean(f),
       ),
     );

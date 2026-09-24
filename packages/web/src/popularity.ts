@@ -9,7 +9,7 @@ export function popularityCheck(
 ): { value: string; state: CheckStatus } {
   // The ranking is the platform's (vercel.app, github.io), not this page's.
   if (sharedHosting) return { value: t("check_popularity_shared"), state: "unverified" };
-  if (failure) return { value: t(`check_failed_${failure}`), state: "unverified" };
+  if (failure && failure !== "not_found") return { value: t(`check_failed_${failure}`), state: "unverified" };
   if (!data || data.top100k === null) return { value: t("check_popularity_unavailable"), state: "unverified" };
   if (data.top100k) {
     const rank = data.rank ? ` · #${data.rank.toLocaleString("pt-BR")}` : "";

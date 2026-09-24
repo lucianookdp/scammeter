@@ -26,4 +26,7 @@ describe("popularity presentation", () => {
     expect(popularityCheck({ ...result, top100k: null }, null, false).value).toContain("Não foi possível");
     expect(popularityCheck(null, "rate_limited", false).value).toContain("muitas consultas");
   });
+  it("reads a proxy without the popularity route as the list being unavailable", () => {
+    expect(popularityCheck(null, "not_found", false).value).toContain("Não foi possível consultar a lista Tranco");
+  });
 });
