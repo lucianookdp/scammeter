@@ -7,6 +7,8 @@ describe("pageTitle", () => {
     expect(pageTitle("<head><title>\n  Ita&uacute; &amp; Voc&ecirc; &#8211; Login </title>")).toBe("Itau & Voce – Login");
     expect(pageTitle("<html><body>no title</body></html>")).toBeNull();
     expect(pageTitle("<title>&#99999999;</title>")).toBe("&#99999999;");
+    expect(pageTitle('<TITLE lang="pt">Loja</TITLE>')).toBe("Loja");
+    expect(pageTitle("<titles>no</titles><title>Sim</title>")).toBe("Sim");
   });
 });
 
@@ -19,6 +21,26 @@ describe("pageAsksCredentials", () => {
     expect(pageAsksCredentials('<input id="card-cvv" maxlength="4">')).toBe(true);
     expect(pageAsksCredentials('<input type="search" name="q"><input type="email">')).toBe(false);
     expect(pageAsksCredentials("<p>Informe o CVV do cartão</p>")).toBe(false);
+    expect(pageAsksCredentials('<INPUT TYPE="PASSWORD">')).toBe(true);
+    expect(pageAsksCredentials('<inputs type="password">')).toBe(false);
+  });
+});
+
+describe("hostile markup", () => {
+  // Each of these used to take minutes on a proxy-sized page (regex restarts
+  // at every "<input"/"<title" and runs to the end). The bound is generous;
+  // the linear scan needs a few milliseconds.
+  it.each([
+    ["unclosed inputs", "<input ".repeat(200_000)],
+    ["unclosed inputs with attributes", '<input name="a '.repeat(100_000)],
+    ["inputs closed once at the end", "<input ".repeat(200_000) + ">"],
+    ["unclosed titles", "<title ".repeat(200_000)],
+    ["titles never closed", "<title>".repeat(200_000)],
+  ])("stays linear on %s", (_label, html) => {
+    const started = performance.now();
+    pageAsksCredentials(html);
+    pageTitle(html);
+    expect(performance.now() - started).toBeLessThan(1000);
   });
 });
 

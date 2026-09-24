@@ -23,22 +23,41 @@ export function isPrivateIp(ip: string): boolean {
     );
   }
   if (net.isIPv6(ip)) {
-    // A zone id ("::1%eth0") is a valid IPv6 address that the equality checks
-    // below would otherwise sail straight past.
-    const lower = ip.toLowerCase().split("%")[0];
-    // An IPv4-mapped address is just that IPv4 address wearing a hat.
-    const mapped = lower.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-    if (mapped) return isPrivateIp(mapped[1]);
+    // A zone id ("::1%eth0") is a valid IPv6 address that the checks below
+    // would otherwise sail straight past.
+    const g = ipv6Groups(ip.toLowerCase().split("%")[0]);
+    if (!g) return true;
+    // IPv4 wearing an IPv6 address: mapped (::ffff:0:0/96), compatible (::/96,
+    // which also covers :: and ::1) and NAT64 (64:ff9b::/96). The URL parser
+    // writes the IPv4 part in hex — [::ffff:127.0.0.1] becomes ::ffff:7f00:1 —
+    // so match on the numbers, never on the dotted spelling.
+    const zeros = (from: number, to: number) => g.slice(from, to).every((x) => x === 0);
+    if ((zeros(0, 5) && (g[5] === 0xffff || g[5] === 0)) || (g[0] === 0x64 && g[1] === 0xff9b && zeros(2, 6))) {
+      return isPrivateIp(`${g[6] >> 8}.${g[6] & 255}.${g[7] >> 8}.${g[7] & 255}`);
+    }
     return (
-      lower === "::" ||
-      lower === "::1" ||
-      lower.startsWith("fe80:") || // link-local
-      lower.startsWith("fc") || // unique local
-      lower.startsWith("fd") ||
-      lower.startsWith("ff") // multicast
+      (g[0] & 0xffc0) === 0xfe80 || // link-local
+      (g[0] & 0xffc0) === 0xfec0 || // site-local (deprecated, still routed internally)
+      (g[0] & 0xfe00) === 0xfc00 || // unique local
+      g[0] >> 8 === 0xff // multicast
     );
   }
   return true; // not a parseable IP — treat as unsafe rather than guess
+}
+
+/** The eight 16-bit groups of a valid IPv6 address, dotted IPv4 tail included. */
+function ipv6Groups(ip: string): number[] | null {
+  let text = ip;
+  const dotted = /(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(text);
+  if (dotted) {
+    const [a, b, c, d] = dotted.slice(1).map(Number);
+    text = `${text.slice(0, dotted.index)}${((a << 8) | b).toString(16)}:${((c << 8) | d).toString(16)}`;
+  }
+  const [head, tail] = text.split("::");
+  const left = head ? head.split(":") : [];
+  const right = tail ? tail.split(":") : [];
+  const groups = tail === undefined ? left : [...left, ...Array(8 - left.length - right.length).fill("0"), ...right];
+  return groups.length === 8 ? groups.map((x) => parseInt(x, 16)) : null;
 }
 
 /**
