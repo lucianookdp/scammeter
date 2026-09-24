@@ -53,6 +53,9 @@ body {
 .badge-alto_risco {
   background: var(--red);
 }
+.badge-muito_alto_risco {
+  background: #7d1a14;
+}
 .badge-nao_verificado {
   background: var(--gray);
 }

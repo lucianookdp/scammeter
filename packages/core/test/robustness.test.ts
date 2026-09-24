@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { computeScore } from "../src/scoring.js";
 import { parsePixPayload, findPixPayloadInText, parseTLV, classifyPixKey } from "../src/pix.js";
 import { findValidCnpjInText, normalizeCnpj, validateCnpj } from "../src/cnpj.js";
-import { domainImitatesBrand, hasCheapTld, registrableDomain } from "../src/domain.js";
+import { analyzeHostname, domainImitatesBrand, hasCheapTld, registrableDomain } from "../src/domain.js";
 
 // Everything here is text pulled off a stranger's web page. None of it is
 // trustworthy, and none of it is allowed to hang, throw, or take forever.
@@ -80,6 +80,7 @@ describe("parsers survive hostile page content", () => {
       expect(() => registrableDomain(s)).not.toThrow();
       expect(() => domainImitatesBrand(s)).not.toThrow();
       expect(() => hasCheapTld(s)).not.toThrow();
+      expect(() => computeScore(analyzeHostname(s))).not.toThrow();
     }
   });
 });
@@ -133,7 +134,7 @@ describe("computeScore is total — no input shape breaks it", () => {
       cnpjRecord: { status: "ativa" },
       domainRankTop100k: true,
     });
-    expect(result.verdict).toBe("alto_risco");
+    expect(result.verdict).toBe("muito_alto_risco");
   });
 
   it("an inactive CNPJ outweighs an old domain", () => {
@@ -142,7 +143,7 @@ describe("computeScore is total — no input shape breaks it", () => {
       cnpjRecord: { status: "baixada" },
       domainAgeDays: 20 * 365,
     });
-    expect(result.verdict).toBe("atencao");
+    expect(result.verdict).toBe("alto_risco");
     expect(result.signals.some((s) => s.key === "cnpj_inactive")).toBe(true);
   });
 

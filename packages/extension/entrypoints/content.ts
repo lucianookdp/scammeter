@@ -1,15 +1,14 @@
 import { browser } from "wxt/browser";
 import {
+  analyzeHostname,
   computeScore,
-  domainImitatesBrand,
-  hasCheapTld,
   findPixPayloadInText,
   findValidCnpjInText,
   parsePixPayload,
   type ScoreResult,
   type ScoringInput,
 } from "@scammeter/core";
-import { fetchCnpjRecord, fetchDomainInfo, fetchReputation } from "../lib/proxyClient";
+import { fetchCnpjRecord, fetchDomainInfo, fetchPopularity, fetchReputation } from "../lib/proxyClient";
 import type { AnalysisMessage } from "../lib/messages";
 
 const MAX_TEXT_LENGTH = 200_000; // ponytail: cap collection so a huge page can't stall analysis
@@ -25,17 +24,17 @@ export default defineContentScript({
 
     const domain = location.hostname;
 
-    const [cnpjRecord, domainInfo, reputation] = await Promise.all([
+    const [cnpjRecord, domainInfo, reputation, popularity] = await Promise.all([
       storeCnpj ? fetchCnpjRecord(storeCnpj) : Promise.resolve(undefined),
       fetchDomainInfo(domain),
       fetchReputation(domain),
+      fetchPopularity(domain),
     ]);
 
     const input: ScoringInput = {
+      ...analyzeHostname(domain),
       siteBlocklisted: reputation?.blocklisted ?? undefined,
-      domainRankTop100k: reputation?.top100k ?? undefined,
-      domainImitatesBrand: domainImitatesBrand(domain),
-      cheapTldPrivateWhois: hasCheapTld(domain),
+      domainRankTop100k: popularity?.top100k ?? undefined,
       storeCnpj,
       cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
       domainAgeDays: domainInfo?.ageDays ?? null,
@@ -53,7 +52,7 @@ export default defineContentScript({
     const message: AnalysisMessage = { type: "scammeter:analysis", url: location.href, result };
     void browser.runtime.sendMessage(message);
 
-    if (result.verdict === "atencao" || result.verdict === "alto_risco") {
+    if (result.verdict === "atencao" || result.verdict === "alto_risco" || result.verdict === "muito_alto_risco") {
       renderBanner(result);
     }
   },
@@ -69,14 +68,14 @@ function renderBanner(result: ScoreResult) {
   host.style.cssText = "all: initial; position: fixed; top: 0; left: 0; right: 0; z-index: 2147483647;";
   const shadow = host.attachShadow({ mode: "closed" });
 
-  const isHigh = result.verdict === "alto_risco";
+  const isHigh = result.verdict === "alto_risco" || result.verdict === "muito_alto_risco";
   const bar = document.createElement("div");
   bar.textContent = `${browser.i18n.getMessage(`badge_${result.verdict}`)} — ${browser.i18n.getMessage(`summary_${result.verdict}`)}`;
   bar.style.cssText = `
     font: 14px/1.4 system-ui, sans-serif;
     padding: 10px 16px;
     color: #fff;
-    background: ${isHigh ? "#b3261e" : "#8a5b00"};
+    background: ${result.verdict === "muito_alto_risco" ? "#7d1a14" : isHigh ? "#b3261e" : "#8a5b00"};
     text-align: center;
   `;
   // textContent only — never innerHTML with data pulled from the page (XSS risk noted in the threat model).

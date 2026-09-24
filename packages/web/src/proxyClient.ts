@@ -45,6 +45,21 @@ export function fetchReputation(
   return getJson(`/reputation/${encodeURIComponent(domain)}`);
 }
 
+export interface PopularityResult {
+  top100k: boolean | null;
+  rank: number | null;
+  domain: string;
+  source: "Tranco";
+  sourceUrl: string;
+  fetchedAt: string | null;
+  status: "available" | "unavailable" | "stale";
+}
+
+/** Longer timeout: right after a proxy restart the first call waits for the list download. */
+export function fetchPopularity(domain: string): Promise<Fetched<PopularityResult>> {
+  return getJson(`/popularity/${encodeURIComponent(domain)}`, 9000);
+}
+
 export interface ScanResult {
   fetched: boolean;
   cnpj: string | null;
