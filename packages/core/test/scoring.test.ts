@@ -184,3 +184,72 @@ describe("typosquats", () => {
     expect(result.verdict).toBe("atencao");
   });
 });
+
+describe("computeScore: company age and page content", () => {
+  const openedDaysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
+  const keys = (r: ReturnType<typeof computeScore>) => r.signals.map((s) => s.key);
+
+  it("a company opened weeks ago counts, more so next to a new domain", () => {
+    const record = { status: "ativa", razaoSocial: "X LTDA", abertura: openedDaysAgo(40) };
+    const oldSite = computeScore({ storeCnpj: "11222333000181", cnpjRecord: record, domainAgeDays: 3000 });
+    expect(keys(oldSite)).toContain("cnpj_new");
+    // Age can't erase the warning: an old domain under a weeks-old company is
+    // also what a bought, expired domain looks like.
+    expect(oldSite.score).toBe(15);
+    expect(oldSite.verdict).toBe("atencao");
+
+    const newSite = computeScore({ storeCnpj: "11222333000181", cnpjRecord: record, domainAgeDays: 20 });
+    expect(keys(newSite)).toEqual(expect.arrayContaining(["cnpj_new", "domain_new", "combo_cnpj_domain_new"]));
+    expect(newSite.score).toBe(35 + 15 + 10);
+    expect(newSite.verdict).toBe("alto_risco");
+  });
+
+  it("a brand-new company is not a track record", () => {
+    const fresh = computeScore({
+      storeCnpj: "11222333000181",
+      cnpjRecord: { status: "ativa", abertura: openedDaysAgo(200) },
+      domainAgeDays: 200,
+    });
+    expect(keys(fresh)).toContain("no_track_record");
+    const settled = computeScore({
+      storeCnpj: "11222333000181",
+      cnpjRecord: { status: "ativa", abertura: openedDaysAgo(3000) },
+      domainAgeDays: 200,
+    });
+    expect(keys(settled)).not.toContain("no_track_record");
+  });
+
+  it("a company name unlike the site is a zero-point note, and never on an official domain", () => {
+    const record = { status: "ativa", razaoSocial: "LINS FERRAO LTDA", abertura: openedDaysAgo(4000) };
+    const note = computeScore({ cnpjRecord: record, storeCnpj: "11222333000181", companyNameMismatch: true, domainAgeDays: 9000 });
+    expect(note.signals.find((s) => s.key === "company_name_mismatch")).toMatchObject({ points: 0, status: "unverified" });
+    expect(note.score).toBe(0);
+    const official = computeScore({ ...analyzeHostname("nubank.com.br"), cnpjRecord: record, companyNameMismatch: true });
+    expect(keys(official)).not.toContain("company_name_mismatch");
+  });
+
+  it("a title claiming a brand the address lacks is a warning, and asking for a password makes it worse", () => {
+    const title = computeScore({ ...analyzeHostname("atendimento-online24.com"), titleBrand: "Nubank", domainAgeDays: 45 });
+    expect(keys(title)).toContain("title_brand");
+    const phishing = computeScore({
+      ...analyzeHostname("atendimento-online24.com"),
+      titleBrand: "Nubank",
+      asksCredentials: true,
+      domainAgeDays: 45,
+    });
+    expect(phishing.score).toBe(25 + 35 + 25);
+    expect(phishing.verdict).toBe("muito_alto_risco");
+  });
+
+  it("titles on old, popular or official sites and plain login forms stay quiet", () => {
+    expect(keys(computeScore({ titleBrand: "Nubank", domainAgeDays: 4000 }))).not.toContain("title_brand");
+    expect(keys(computeScore({ titleBrand: "Nubank", domainRankTop100k: true }))).not.toContain("title_brand");
+    expect(keys(computeScore({ ...analyzeHostname("mercadolivre.com.br"), titleBrand: "Mercado Pago" }))).not.toContain("title_brand");
+    const login = computeScore({ ...analyzeHostname("minhaloja.com.br"), asksCredentials: true, domainAgeDays: 45 });
+    expect(keys(login)).not.toContain("credentials_under_brand");
+    // Already counted through the address: the title adds nothing twice.
+    const both = computeScore({ ...analyzeHostname("nubank-seguranca.com"), titleBrand: "Nubank", asksCredentials: true });
+    expect(keys(both)).not.toContain("title_brand");
+    expect(keys(both)).toContain("credentials_under_brand");
+  });
+});

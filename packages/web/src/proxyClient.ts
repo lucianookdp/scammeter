@@ -64,6 +64,9 @@ export interface ScanResult {
   fetched: boolean;
   cnpj: string | null;
   pixPayload: string | null;
+  // Optional: a proxy deployed before these existed leaves them out.
+  title?: string | null;
+  asksCredentials?: boolean;
 }
 
 /** Longer timeout: the proxy itself fetches the target page (up to 8s) before we get a reply. */
