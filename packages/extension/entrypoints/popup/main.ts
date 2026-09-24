@@ -6,7 +6,9 @@ import { storageKeyForTab } from "../../lib/messages";
 const app = document.getElementById("app")!;
 
 function t(key: string): string {
-  return browser.i18n.getMessage(key) || key;
+  // Keys are built at runtime ("badge_" + verdict), so they can't be checked
+  // against the generated message list.
+  return browser.i18n.getMessage(key as Parameters<typeof browser.i18n.getMessage>[0]) || key;
 }
 
 // Brand and platform names come from the address being checked — never raw HTML.
