@@ -14,6 +14,9 @@
   "badge_alto_risco": {
     "message": "High risk"
   },
+  "badge_muito_alto_risco": {
+    "message": "Very high risk"
+  },
   "badge_nao_verificado": {
     "message": "Could not verify"
   },
@@ -24,7 +27,10 @@
     "message": "A few signals deserve attention before you continue."
   },
   "summary_alto_risco": {
-    "message": "Risk signals require caution before you continue."
+    "message": "Serious risk signals. Only continue if you're sure who's on the other side."
+  },
+  "summary_muito_alto_risco": {
+    "message": "Several strong scam signals. Don't pay or share your details."
   },
   "summary_nao_verificado": {
     "message": "No check returned any data. That does not mean the site is safe."
@@ -51,10 +57,64 @@
     "message": "Tax ID active with the federal revenue service."
   },
   "reason_domain_new": {
-    "message": "This site was created only days ago."
+    "message": "This site was created less than 30 days ago."
+  },
+  "reason_domain_young": {
+    "message": "This site was created less than 3 months ago."
+  },
+  "reason_domain_recent": {
+    "message": "This site was created less than 6 months ago."
+  },
+  "reason_domain_under_year": {
+    "message": "This site was created less than a year ago."
+  },
+  "reason_no_track_record": {
+    "message": "A recent site with nothing to vouch for it: not popular, not old, and no active company registration."
   },
   "reason_brand_lookalike": {
-    "message": "The address looks like it's imitating a known brand."
+    "message": "The address uses a well-known brand's name but isn't its official site."
+  },
+  "reason_brand_lookalike_named": {
+    "message": "The address uses the name {brand} but isn't its official site."
+  },
+  "reason_brand_typosquat": {
+    "message": "The address imitates a well-known brand's name with one letter changed."
+  },
+  "reason_brand_typosquat_named": {
+    "message": "The address imitates the name {brand} with one letter changed."
+  },
+  "reason_brand_typosquat_old": {
+    "message": "The address resembles a well-known brand's, but it has existed for years."
+  },
+  "reason_brand_typosquat_old_named": {
+    "message": "The address resembles {brand}, but it has existed for years."
+  },
+  "reason_punycode": {
+    "message": "The address uses special characters that can pass for ordinary letters."
+  },
+  "reason_ip_host": {
+    "message": "The address is an IP number, not a site name."
+  },
+  "reason_shared_hosting": {
+    "message": "The page is on a free platform where anyone can create a site in minutes."
+  },
+  "reason_shared_hosting_named": {
+    "message": "The page is on a free platform ({platform}) where anyone can create a site in minutes. The platform's age doesn't count for the page."
+  },
+  "reason_suspicious_keywords": {
+    "message": "The address contains words common in scams (offer, withdrawal, tracking, unlock…)."
+  },
+  "reason_combo_brand_new": {
+    "message": "Aggravating: an imitated brand on a freshly created address."
+  },
+  "reason_combo_brand_hosting": {
+    "message": "Aggravating: an imitated brand on a free platform."
+  },
+  "reason_combo_brand_bait": {
+    "message": "Aggravating: an imitated brand together with bait words."
+  },
+  "reason_combo_cheap_new": {
+    "message": "Aggravating: a cheap address (.shop, .xyz…) created recently."
   },
   "reason_cnae_mismatch": {
     "message": "The company is registered under a different business activity."
@@ -78,13 +138,22 @@
     "message": "The social media links don't work."
   },
   "reason_tranco_top100k": {
-    "message": "This site gets a lot of traffic."
+    "message": "It's among the 100,000 most visited sites in the world (Tranco list)."
   },
   "reason_domain_established": {
     "message": "Domain registered more than five years ago."
   },
   "reason_domain_mature": {
     "message": "Domain registered more than two years ago."
+  },
+  "reason_official_domain": {
+    "message": "This is a well-known brand's official site."
+  },
+  "reason_official_domain_named": {
+    "message": "This is {brand}'s official site."
+  },
+  "reason_restricted_tld": {
+    "message": "The address ends in a restricted domain (.gov.br, .jus.br, .b.br…) that only verified bodies and institutions can register."
   },
   "reason_marketplace_notice": {
     "message": "This analysis covers the seller, not the marketplace itself."
@@ -250,5 +319,23 @@
   },
   "check_blocklist_listed": {
     "message": "This hostname appears in the phishing list."
+  },
+  "check_popularity": {
+    "message": "Popularity"
+  },
+  "check_popularity_top": {
+    "message": "Among the 100,000 most visited sites in the world · Tranco"
+  },
+  "check_popularity_not_top": {
+    "message": "Not among the 100,000 most visited sites · Tranco. That alone doesn't indicate risk."
+  },
+  "check_popularity_unavailable": {
+    "message": "Couldn't check the Tranco list right now."
+  },
+  "check_popularity_shared": {
+    "message": "Not applicable: the popularity would be the platform's, not this page's."
+  },
+  "check_domain_shared": {
+    "message": "{platform} · shared platform, the domain's age doesn't count for this page"
   }
 }

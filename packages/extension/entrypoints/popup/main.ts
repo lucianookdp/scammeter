@@ -1,4 +1,5 @@
 import { browser } from "wxt/browser";
+import { reasonText } from "@scammeter/core";
 import type { StoredAnalysis } from "../../lib/messages";
 import { storageKeyForTab } from "../../lib/messages";
 
@@ -8,8 +9,9 @@ function t(key: string): string {
   return browser.i18n.getMessage(key) || key;
 }
 
-function reasonLabel(reasonKey: string): string {
-  return t(reasonKey.replace(/\./g, "_"));
+// Brand and platform names come from the address being checked — never raw HTML.
+function escapeHtml(text: string): string {
+  return text.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
 function render(analysis: StoredAnalysis | null) {
@@ -20,7 +22,7 @@ function render(analysis: StoredAnalysis | null) {
 
   const { result } = analysis;
   const reasons = result.signals
-    .map((s) => `<li class="reason reason-${s.status}">${reasonLabel(s.reasonKey)}</li>`)
+    .map((s) => `<li class="reason reason-${s.status}">${escapeHtml(reasonText(s, t))}</li>`)
     .join("");
 
   app.innerHTML = `

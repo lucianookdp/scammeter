@@ -1,9 +1,9 @@
 import {
+  analyzeHostname,
   computeScore,
-  domainImitatesBrand,
   formatCnpj,
-  hasCheapTld,
   parsePixPayload,
+  reasonText,
   validateCnpj,
   type CheckStatus,
   type CnpjRecord,
@@ -14,7 +14,8 @@ import { t } from "./i18n";
 import { reputationCheck } from "./reputation";
 import { getTheme, setTheme } from "./theme";
 import { parseSiteUrl } from "./url";
-import { fetchCnpjRecord, fetchDomainInfo, fetchReputation, fetchScan, type FetchFailure } from "./proxyClient";
+import { fetchCnpjRecord, fetchDomainInfo, fetchPopularity, fetchReputation, fetchScan, type FetchFailure } from "./proxyClient";
+import { popularityCheck } from "./popularity";
 
 // Lucide icons (ISC license), inlined as static markup — no icon-font/JS dependency needed.
 const ICONS = {
@@ -98,10 +99,6 @@ if (!reduceMotion) {
   needleGroup.addEventListener("animationend", () => needleGroup.classList.remove("boot"), { once: true });
 }
 
-function reasonLabel(reasonKey: string): string {
-  return t(reasonKey.replace(/\./g, "_"));
-}
-
 function setNeedle(score: number) {
   needleGroup.style.setProperty("--needle-rotate", `${(score / 100) * 180 - 90}deg`);
 }
@@ -169,7 +166,7 @@ function renderResult(result: ScoreResult, checks: CheckRow[]) {
           li.append(weight);
         }
         const text = document.createElement("span");
-        text.textContent = reasonLabel(signal.reasonKey);
+        text.textContent = reasonText(signal, t);
         li.append(text);
         return li;
       }),
@@ -273,10 +270,14 @@ form.addEventListener("submit", async (event) => {
     // if one's sitting on the page) on the site itself before asking the user.
     const needsScan = !cnpjValue || !pixValue;
 
-    const [scan, domainInfo, reputation] = await Promise.all([
+    // Everything the address alone gives away, before any lookup comes back.
+    const host = analyzeHostname(domain);
+
+    const [scan, domainInfo, reputation, popularity] = await Promise.all([
       needsScan ? fetchScan(link) : Promise.resolve(null),
       fetchDomainInfo(domain),
       fetchReputation(domain),
+      fetchPopularity(domain),
     ]);
 
     const checks: CheckRow[] = [];
@@ -314,13 +315,14 @@ form.addEventListener("submit", async (event) => {
     const ageDays = domainInfo?.data?.ageDays ?? null;
     checks.push({
       labelKey: "check_domain",
-      value:
-        typeof ageDays === "number"
+      value: host.sharedHosting
+        ? t("check_domain_shared").replace("{platform}", host.sharedHosting)
+        : typeof ageDays === "number"
           ? `${domain} · ${t("check_domain_age").replace("{age}", formatAge(ageDays))}`
           : domainInfo?.failure
             ? failureText(domainInfo.failure)
             : t("check_domain_unknown"),
-      state: typeof ageDays === "number" ? "ok" : "unverified",
+      state: host.sharedHosting ? "alert" : typeof ageDays === "number" ? "ok" : "unverified",
     });
 
     checks.push({
@@ -348,11 +350,15 @@ form.addEventListener("submit", async (event) => {
       ...reputationCheck(reputation.data, reputation.failure),
     });
 
+    checks.push({
+      labelKey: "check_popularity",
+      ...popularityCheck(popularity.data, popularity.failure, Boolean(host.sharedHosting)),
+    });
+
     const input: ScoringInput = {
+      ...host,
       siteBlocklisted: reputation?.data?.blocklisted ?? undefined,
-      domainRankTop100k: reputation?.data?.top100k ?? undefined,
-      domainImitatesBrand: domainImitatesBrand(domain),
-      cheapTldPrivateWhois: hasCheapTld(domain),
+      domainRankTop100k: popularity.data?.top100k ?? undefined,
       storeCnpj,
       cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
       domainAgeDays: ageDays,
@@ -368,7 +374,9 @@ form.addEventListener("submit", async (event) => {
     setLoading(false);
     renderResult(computeScore(input), checks);
     showTransportProblem(
-      [scan?.failure, domainInfo?.failure, reputation?.failure, cnpjResult?.failure].filter(
+      // A proxy without the popularity route (404) only means no ranking
+      // credit; it isn't a failed check worth a warning on every result.
+      [scan?.failure, domainInfo?.failure, reputation?.failure, popularity.failure === "not_found" ? null : popularity.failure, cnpjResult?.failure].filter(
         (f): f is FetchFailure => Boolean(f),
       ),
     );

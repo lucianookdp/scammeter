@@ -149,3 +149,11 @@ describe("/reputation — provider unavailable", () => {
     expect(res.json()).toMatchObject({ blocklisted: null, top100k: null, status: "unavailable", source: "PhishDestroy" });
   });
 });
+
+describe("/popularity — list unavailable", () => {
+  it("reports unknown rather than 'not popular'", async () => {
+    noNetwork();
+    const res = await app.inject({ method: "GET", url: "/popularity/example.com" });
+    expect(res.json()).toMatchObject({ top100k: null, status: "unavailable", source: "Tranco" });
+  });
+});

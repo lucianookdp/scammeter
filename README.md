@@ -10,39 +10,67 @@ Site: https://lucianookdp.github.io/scammeter/
 
 ## How the score works
 
-The score counts evidence of a scam. It does not count the absence of
-evidence: a site that simply doesn't publish a company registration is not
-penalised for it, because most of the web has no reason to publish one. That
-absence only becomes a risk when the page is asking for a Pix payment — not
-knowing who receives the money is then the whole problem.
+The score counts evidence of a scam. It is a sum of weighted signals, not a
+percentage and not a probability. Every rule produces a reason in plain
+language with its weight, including the ones that passed, so the user can
+follow the arithmetic.
 
-Domain age and popularity can offset accumulated points, but never erase the
-strongest warning. A negative result from a single phishing feed is not enough
-to award "low risk". When every lookup is unavailable, the verdict is "could
-not verify".
+| Score | Verdict |
+|---|---|
+| 0–14 | Low risk |
+| 15–39 | Attention |
+| 40–69 | High risk |
+| 70–100 | Very high risk |
 
-Every rule produces a reason in plain language, including the ones that
-passed. The user always sees why the number is what it is.
+Rules that keep the number honest:
+
+- **The strongest warning is a floor.** Domain age, popularity and an official
+  suffix can offset accumulated points, but never below the heaviest single
+  alert. A brand lookalike (45) or a Pix to a person (50) is always at least
+  "high risk".
+- **Combinations weigh more than their parts.** A brand name on a fresh domain,
+  on a free hosting platform or next to bait words, and a cheap TLD on a fresh
+  domain, each add their own line.
+- **No track record is not low risk.** A site that is not popular, is less than
+  a year old and shows no active company registration lands at 30
+  ("attention"), even when nothing damning turned up.
+- **Absence of a CNPJ is not penalised** unless the page asks for a Pix
+  payment: most of the web has no reason to publish one.
+- **Shared platforms don't lend their reputation.** A page on `vercel.app`,
+  `github.io`, `sites.google.com` and the like does not inherit the platform's
+  age or ranking.
+- A negative result from a single phishing feed is not enough to award "low
+  risk". When every lookup is unavailable, the verdict is "could not verify".
 
 ## Signals
 
-Live today:
+Risk:
 
-- PhishDestroy primary phishing hostname feed, with source attribution and the
-  time our server downloaded its copy.
+- PhishDestroy primary phishing hostname feed (100, forces "very high risk").
+- A Pix key that pays a person (50) or a different company than the site names (50).
+- An inactive company registration (45).
+- A known brand's name on a domain that isn't the brand's (45), or the brand
+  one letter off, including digit/letter swaps like `rnercadolivre` (50; 20 when
+  the domain has existed for years).
+- An IP address instead of a name (40), punycode labels (25).
+- Domain age: under 30 days (35), 3 months (25), 6 months (15), a year (10).
+- A page asking for Pix without naming the company (25).
+- Free hosting platforms (15), bait words in the address such as `saque`,
+  `rastreio`, `desbloqueio` (10), cheap TLDs such as `.shop` and `.xyz` (10).
 
-- Domain age via RDAP, and whether the domain is old enough to vouch for itself.
-- The company registration found on the page, checked against its official
-  status with the federal revenue service.
-- The Pix key: whether it pays a person instead of a company, and whether it
-  pays a different company than the one named on the site.
-- A known brand's name worn by a domain that isn't that brand's.
-- Registries that scams cluster on (`.shop`, `.xyz`, and the rest).
+Trust:
+
+- The official domain of a known brand (−100).
+- Restricted suffixes nobody registers without proof: `.gov.br`, `.jus.br`,
+  `.leg.br`, `.mil.br`, `.mp.br`, `.b.br`, `.edu.br` (−40).
+- Tranco top 100k (−40).
+- Domain older than five years (−25) or two years (−10).
+- Company registration active with the federal revenue service (no points, but
+  counts as a track record).
 
 Planned, and currently inert:
 
-- Additional sources (Safe Browsing, URLhaus, PhishTank, OpenPhish) and the
-  Tranco ranking. No popularity data is currently available.
+- Additional sources (Safe Browsing, URLhaus, OpenPhish).
 - Page coherence: missing address, missing return policy, contact only through
   WhatsApp, broken social links, registrant and business-activity mismatches.
 
@@ -67,6 +95,16 @@ No credentials, paid services or cron jobs are required. Only the public feed
 is requested upstream, never the hostname a user is checking. The UI links to
 the source for inspection and false-positive reports. See
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the MIT data license.
+
+## Popularity
+
+`GET /popularity/:domain` looks up the registrable domain in the
+[Tranco](https://tranco-list.eu/) top 100,000. The server downloads the latest
+list once a day (32 MiB download cap, 20-second timeout) and keeps it in
+memory; the hostname being checked is never sent upstream. It returns
+`top100k` (true, false or null when the list isn't loaded), `rank`, `domain`,
+`source`, `sourceUrl`, `fetchedAt` and `status`. A day-old copy keeps being
+served, marked `stale`, while a refresh fails.
 
 ## Running
 

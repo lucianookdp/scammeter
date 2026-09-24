@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { domainImitatesBrand, hasCheapTld, registrableDomain } from "../src/domain.js";
+import {
+  baitWords,
+  brandImpersonation,
+  domainImitatesBrand,
+  hasCheapTld,
+  hasRestrictedTld,
+  isIpHost,
+  isPunycode,
+  officialBrandFor,
+  registrableDomain,
+  sharedHostingPlatform,
+} from "../src/domain.js";
 
 describe("registrableDomain", () => {
   it("strips subdomains so RDAP gets a domain it actually knows", () => {
@@ -52,5 +63,91 @@ describe("hasCheapTld", () => {
   it("leaves ordinary TLDs alone", () => {
     expect(hasCheapTld("loja.com.br")).toBe(false);
     expect(hasCheapTld("facebook.com")).toBe(false);
+  });
+});
+
+describe("brandImpersonation", () => {
+  it("names the brand worn outright", () => {
+    expect(brandImpersonation("nubank-app.com")).toEqual({ brand: "Nubank", kind: "name" });
+  });
+
+  it("catches a brand one letter off", () => {
+    expect(brandImpersonation("mercadolivrre.com")).toEqual({ brand: "Mercado Livre", kind: "typo" });
+    expect(brandImpersonation("nubamk.com")).toEqual({ brand: "Nubank", kind: "typo" });
+    expect(brandImpersonation("mercado-livre-ofertas.com")?.brand).toBe("Mercado Livre");
+  });
+
+  it("catches digits and letter pairs posing as letters", () => {
+    expect(brandImpersonation("rnercadolivre.com")?.kind).toBe("typo");
+    expect(brandImpersonation("sh0pee-promo.com")?.brand).toBe("Shopee");
+  });
+
+  it("catches the government suffix used as a subdomain", () => {
+    expect(brandImpersonation("servicos.gov.br.consulta.online")?.brand).toBe("gov.br");
+    expect(brandImpersonation("www.gov.br")).toBeNull();
+  });
+
+  it("does not flag ordinary words that happen to contain a brand", () => {
+    for (const host of [
+      "caixa-de-som.com.br",
+      "portaldaamazonia.com.br",
+      "amazonas.am.gov.br",
+      "s3.amazonaws.com",
+      "correias.com.br",
+      "jornal-correio.com.br",
+      "americana.sp.gov.br",
+      "benner.com.br",
+      "vivo-bem.com.br",
+    ]) {
+      expect(brandImpersonation(host), host).toBeNull();
+    }
+  });
+
+  it("flags an everyday-word brand once the address says what the scam is about", () => {
+    expect(brandImpersonation("caixa-fgts-saque.com")?.brand).toBe("Caixa");
+    expect(brandImpersonation("claro-fatura.com")?.brand).toBe("Claro");
+  });
+
+  it("ignores IP addresses", () => {
+    expect(brandImpersonation("192.168.0.1")).toBeNull();
+  });
+});
+
+describe("hostname trust and risk markers", () => {
+  it("names the brand behind an official domain", () => {
+    expect(officialBrandFor("www.nubank.com.br")).toBe("Nubank");
+    expect(officialBrandFor("ofertas.magazineluiza.com.br")).toBe("Magazine Luiza");
+    expect(officialBrandFor("lojadobairro.com.br")).toBeNull();
+    expect(officialBrandFor("caixa.gov.br")).toBe("Caixa");
+  });
+
+  it("recognises suffixes that require proof of identity", () => {
+    expect(hasRestrictedTld("www.gov.br")).toBe(true);
+    expect(hasRestrictedTld("receita.fazenda.gov.br")).toBe(true);
+    expect(hasRestrictedTld("tjsp.jus.br")).toBe(true);
+    expect(hasRestrictedTld("gov.br.golpe.com")).toBe(false);
+    expect(hasRestrictedTld("meugov.com.br")).toBe(false);
+  });
+
+  it("identifies free hosting platforms only for pages on them", () => {
+    expect(sharedHostingPlatform("golpe.vercel.app")).toBe("vercel.app");
+    expect(sharedHostingPlatform("sites.google.com")).toBe("sites.google.com");
+    expect(sharedHostingPlatform("vercel.app")).toBeNull();
+    expect(sharedHostingPlatform("www.google.com")).toBeNull();
+  });
+
+  it("finds lure words whole or glued", () => {
+    expect(baitWords("correios-rastreio.com")).toContain("rastreio");
+    expect(baitWords("saque-fgts-2026.com")).toEqual(expect.arrayContaining(["saque", "fgts"]));
+    expect(baitWords("desbloqueiodeconta.com")).toContain("desbloqueio");
+    expect(baitWords("lojadobairro.com.br")).toEqual([]);
+  });
+
+  it("spots punycode and IP hosts", () => {
+    expect(isPunycode("xn--nubnk-3ve.com")).toBe(true);
+    expect(isPunycode("nubank.com.br")).toBe(false);
+    expect(isIpHost("203.0.113.9")).toBe(true);
+    expect(isIpHost("[::1]")).toBe(true);
+    expect(isIpHost("example.com")).toBe(false);
   });
 });

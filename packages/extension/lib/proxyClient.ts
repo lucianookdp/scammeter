@@ -28,3 +28,7 @@ export function fetchReputation(
 ): Promise<ReputationResult | null> {
   return getJson(`/reputation/${encodeURIComponent(domain)}`);
 }
+
+export function fetchPopularity(domain: string): Promise<{ top100k: boolean | null } | null> {
+  return getJson(`/popularity/${encodeURIComponent(domain)}`, 9000);
+}

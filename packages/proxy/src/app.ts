@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import { isRateLimited } from "./rateLimit.js";
 import { registerCnpjRoute } from "./routes/cnpj.js";
 import { registerDomainRoute } from "./routes/domain.js";
+import { registerPopularityRoute } from "./routes/popularity.js";
 import { registerReputationRoute } from "./routes/reputation.js";
 import { registerScanRoute } from "./routes/scan.js";
 
@@ -56,6 +57,7 @@ export async function buildApp({ logger = true }: BuildOptions = {}): Promise<Fa
   registerCnpjRoute(app);
   registerDomainRoute(app);
   registerReputationRoute(app);
+  registerPopularityRoute(app);
   registerScanRoute(app);
 
   return app;

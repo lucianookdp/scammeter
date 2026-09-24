@@ -14,6 +14,9 @@
   "badge_alto_risco": {
     "message": "Alto risco"
   },
+  "badge_muito_alto_risco": {
+    "message": "Risco muito alto"
+  },
   "badge_nao_verificado": {
     "message": "Não foi possível verificar"
   },
@@ -24,7 +27,10 @@
     "message": "Alguns sinais merecem atenção antes de continuar."
   },
   "summary_alto_risco": {
-    "message": "Há sinais de risco que exigem cautela antes de continuar."
+    "message": "Há sinais de risco sérios. Só continue se tiver certeza de quem está do outro lado."
+  },
+  "summary_muito_alto_risco": {
+    "message": "Vários sinais fortes de golpe. Não pague nem informe seus dados."
   },
   "summary_nao_verificado": {
     "message": "Nenhuma checagem retornou dados. Isso não quer dizer que o site é seguro."
@@ -51,10 +57,64 @@
     "message": "CNPJ ativo na Receita Federal."
   },
   "reason_domain_new": {
-    "message": "Este site foi criado há poucos dias."
+    "message": "Este site foi criado há menos de 30 dias."
+  },
+  "reason_domain_young": {
+    "message": "Este site foi criado há menos de 3 meses."
+  },
+  "reason_domain_recent": {
+    "message": "Este site foi criado há menos de 6 meses."
+  },
+  "reason_domain_under_year": {
+    "message": "Este site foi criado há menos de 1 ano."
+  },
+  "reason_no_track_record": {
+    "message": "Site recente e sem nada que comprove sua reputação: não é popular, não é antigo e não mostra um CNPJ ativo."
   },
   "reason_brand_lookalike": {
-    "message": "O endereço parece imitar uma marca conhecida."
+    "message": "O endereço usa o nome de uma marca conhecida, mas não é o site oficial."
+  },
+  "reason_brand_lookalike_named": {
+    "message": "O endereço usa o nome {brand}, mas não é o site oficial."
+  },
+  "reason_brand_typosquat": {
+    "message": "O endereço imita o nome de uma marca conhecida com uma letra trocada."
+  },
+  "reason_brand_typosquat_named": {
+    "message": "O endereço imita o nome {brand} com uma letra trocada."
+  },
+  "reason_brand_typosquat_old": {
+    "message": "O endereço é parecido com o de uma marca conhecida, mas existe há anos."
+  },
+  "reason_brand_typosquat_old_named": {
+    "message": "O endereço é parecido com {brand}, mas existe há anos."
+  },
+  "reason_punycode": {
+    "message": "O endereço usa caracteres especiais que podem se passar por letras comuns."
+  },
+  "reason_ip_host": {
+    "message": "O endereço é um número IP, não o nome de um site."
+  },
+  "reason_shared_hosting": {
+    "message": "A página está numa plataforma gratuita, onde qualquer pessoa cria um site em minutos."
+  },
+  "reason_shared_hosting_named": {
+    "message": "A página está numa plataforma gratuita ({platform}), onde qualquer pessoa cria um site em minutos. A idade da plataforma não vale para a página."
+  },
+  "reason_suspicious_keywords": {
+    "message": "O endereço tem palavras comuns em golpes (oferta, saque, rastreio, desbloqueio…)."
+  },
+  "reason_combo_brand_new": {
+    "message": "Agravante: marca imitada em um endereço recém-criado."
+  },
+  "reason_combo_brand_hosting": {
+    "message": "Agravante: marca imitada em uma plataforma gratuita."
+  },
+  "reason_combo_brand_bait": {
+    "message": "Agravante: marca imitada junto com palavras de isca."
+  },
+  "reason_combo_cheap_new": {
+    "message": "Agravante: endereço barato (.shop, .xyz…) criado há pouco tempo."
   },
   "reason_cnae_mismatch": {
     "message": "A empresa é registrada com outra atividade."
@@ -78,13 +138,22 @@
     "message": "Os links de redes sociais não funcionam."
   },
   "reason_tranco_top100k": {
-    "message": "Site muito acessado."
+    "message": "Está entre os 100 mil sites mais acessados do mundo (lista Tranco)."
   },
   "reason_domain_established": {
     "message": "Domínio registrado há mais de cinco anos."
   },
   "reason_domain_mature": {
     "message": "Domínio registrado há mais de dois anos."
+  },
+  "reason_official_domain": {
+    "message": "Este é o site oficial de uma marca conhecida."
+  },
+  "reason_official_domain_named": {
+    "message": "Este é o site oficial de {brand}."
+  },
+  "reason_restricted_tld": {
+    "message": "O endereço termina em um domínio restrito (.gov.br, .jus.br, .b.br…), que só órgãos e instituições comprovadas conseguem registrar."
   },
   "reason_marketplace_notice": {
     "message": "Esta análise vale para o vendedor, não para a plataforma."
@@ -250,5 +319,23 @@
   },
   "check_blocklist_listed": {
     "message": "Este endereço consta na lista de phishing."
+  },
+  "check_popularity": {
+    "message": "Popularidade"
+  },
+  "check_popularity_top": {
+    "message": "Entre os 100 mil sites mais acessados do mundo · Tranco"
+  },
+  "check_popularity_not_top": {
+    "message": "Fora dos 100 mil sites mais acessados · Tranco. Isso sozinho não indica risco."
+  },
+  "check_popularity_unavailable": {
+    "message": "Não foi possível consultar a lista Tranco agora."
+  },
+  "check_popularity_shared": {
+    "message": "Não se aplica: a popularidade seria da plataforma, não desta página."
+  },
+  "check_domain_shared": {
+    "message": "{platform} · plataforma compartilhada, a idade do domínio não vale para esta página"
   }
 }
