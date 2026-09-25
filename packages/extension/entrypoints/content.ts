@@ -1,15 +1,11 @@
 import { browser } from "wxt/browser";
 import {
-  analyzeHostname,
-  companyMatchesHost,
   computeScore,
   findPixPayloadInText,
   findValidCnpjInText,
   pageAsksCredentials,
-  parsePixPayload,
-  titleImpersonation,
+  scoringInputFrom,
   type ScoreResult,
-  type ScoringInput,
 } from "@scammeter/core";
 import { fetchCnpjRecord, fetchDomainInfo, fetchPopularity, fetchReputation } from "../lib/proxyClient";
 import type { AnalysisMessage } from "../lib/messages";
@@ -23,9 +19,6 @@ export default defineContentScript({
     const storeCnpj = findValidCnpjInText(bodyText);
 
     const html = document.documentElement.innerHTML.slice(0, MAX_TEXT_LENGTH);
-    const pixPayload = findPixPayloadInText(html);
-    const parsedPix = pixPayload ? parsePixPayload(pixPayload) : null;
-
     const domain = location.hostname;
 
     const [cnpjRecord, domainInfo, reputation, popularity] = await Promise.all([
@@ -35,26 +28,22 @@ export default defineContentScript({
       fetchPopularity(domain),
     ]);
 
-    const input: ScoringInput = {
-      ...analyzeHostname(domain),
-      siteBlocklisted: reputation?.blocklisted ?? undefined,
-      domainRankTop100k: popularity?.top100k ?? undefined,
-      storeCnpj,
+    // The live page stands in for the proxy's /scan; the same builder as the
+    // web page and the share preview turns it into the score's input.
+    const input = scoringInputFrom({
+      hostname: domain,
+      scan: {
+        fetched: true,
+        cnpj: storeCnpj,
+        pixPayload: findPixPayloadInText(html),
+        title: document.title,
+        asksCredentials: pageAsksCredentials(html),
+      },
       cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
       domainAgeDays: domainInfo?.ageDays ?? null,
-      titleBrand: titleImpersonation(document.title, domain) ?? undefined,
-      asksCredentials: pageAsksCredentials(html),
-      companyNameMismatch: cnpjRecord?.razaoSocial
-        ? !companyMatchesHost([cnpjRecord.razaoSocial, cnpjRecord.nomeFantasia], domain)
-        : undefined,
-      pix:
-        parsedPix?.merchantAccount?.key && parsedPix.keyType !== "unknown"
-          ? {
-              keyType: parsedPix.keyType,
-              keyCnpj: parsedPix.keyType === "cnpj" ? parsedPix.merchantAccount.key : undefined,
-            }
-          : undefined,
-    };
+      blocklisted: reputation?.blocklisted,
+      top100k: popularity?.top100k,
+    });
 
     const result = computeScore(input);
 

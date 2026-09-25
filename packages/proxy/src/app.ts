@@ -6,6 +6,7 @@ import { registerDomainRoute } from "./routes/domain.js";
 import { registerPopularityRoute } from "./routes/popularity.js";
 import { registerReputationRoute } from "./routes/reputation.js";
 import { registerScanRoute } from "./routes/scan.js";
+import { registerShareRoute } from "./routes/share.js";
 
 export interface BuildOptions {
   logger?: boolean;
@@ -59,6 +60,7 @@ export async function buildApp({ logger = true }: BuildOptions = {}): Promise<Fa
   registerReputationRoute(app);
   registerPopularityRoute(app);
   registerScanRoute(app);
+  registerShareRoute(app);
 
   return app;
 }
