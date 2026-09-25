@@ -1,22 +1,21 @@
 import {
   analyzeHostname,
-  companyMatchesHost,
   computeScore,
   formatCnpj,
   parsePixPayload,
   reasonText,
-  titleImpersonation,
+  scoringInputFrom,
+  storeCnpjFrom,
   validateCnpj,
   type CheckStatus,
   type CnpjRecord,
   type ScoreResult,
-  type ScoringInput,
 } from "@scammeter/core";
 import { t } from "./i18n";
 import { reputationCheck } from "./reputation";
 import { getTheme, setTheme } from "./theme";
 import { parseSiteUrl } from "./url";
-import { fetchCnpjRecord, fetchDomainInfo, fetchPopularity, fetchReputation, fetchScan, type FetchFailure } from "./proxyClient";
+import { fetchCnpjRecord, fetchDomainInfo, fetchPopularity, fetchReputation, fetchScan, shareLink, type FetchFailure } from "./proxyClient";
 import { popularityCheck } from "./popularity";
 
 // Lucide icons (ISC license), inlined as static markup — no icon-font/JS dependency needed.
@@ -76,6 +75,10 @@ const checksGroup = document.getElementById("group-checks") as HTMLElement;
 const checksList = checksGroup.querySelector(".checks") as HTMLDListElement;
 const factRaEl = document.getElementById("fact-reclameaqui") as HTMLAnchorElement;
 const factRaTextEl = document.getElementById("fact-reclameaqui-text")!;
+const shareRow = document.getElementById("share-row")!;
+const shareWhatsapp = document.getElementById("share-whatsapp") as HTMLAnchorElement;
+const shareCopy = document.getElementById("share-copy") as HTMLButtonElement;
+const shareCopyText = document.getElementById("share-copy-text")!;
 
 const GROUPS: Record<CheckStatus, { section: HTMLElement; title: HTMLElement; list: HTMLUListElement }> = {
   alert: groupRefs("group-alert"),
@@ -116,6 +119,7 @@ function setLoading(isLoading: boolean) {
     captionEl.textContent = t("checking");
     resultsEl.hidden = true;
     alertBar.hidden = true;
+    shareRow.hidden = true;
   }
 }
 
@@ -240,6 +244,28 @@ function failureText(failure: FetchFailure): string {
   return t(`check_failed_${failure}`);
 }
 
+/** Offers the result to send on: the link carries only the address, never the verdict. */
+function showShare(link: string, domain: string, verdictLabel: string) {
+  const site = new URL(link);
+  // Query strings carry tracking ids and tokens; the site is scheme, host and path.
+  site.search = "";
+  site.hash = "";
+  const url = shareLink(site.href);
+  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(
+    `Chequei ${domain} no Scammeter: ${verdictLabel}. Veja o porquê: ${url}`,
+  )}`;
+  shareCopyText.textContent = t("share_copy");
+  shareCopy.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      shareCopyText.textContent = t("share_copied");
+    } catch {
+      // Clipboard can be denied; the WhatsApp button still works.
+    }
+  };
+  shareRow.hidden = false;
+}
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (submitBtn.disabled) return;
@@ -284,16 +310,10 @@ form.addEventListener("submit", async (event) => {
 
     const checks: CheckRow[] = [];
 
-    let storeCnpj: string | null | undefined;
-    if (cnpjValue) {
-      storeCnpj = cnpjValue;
-    } else if (scan?.data?.fetched) {
-      storeCnpj = scan.data.cnpj;
-      if (!scan.data.cnpj) {
-        showScanHint("scan_no_cnpj");
-      }
-    } else {
-      showScanHint("scan_unreachable");
+    const storeCnpj = storeCnpjFrom({ scan: scan?.data, manualCnpj: cnpjValue });
+    if (!cnpjValue) {
+      if (!scan?.data?.fetched) showScanHint("scan_unreachable");
+      else if (!scan.data.cnpj) showScanHint("scan_no_cnpj");
     }
 
     checks.push({
@@ -357,29 +377,21 @@ form.addEventListener("submit", async (event) => {
       ...popularityCheck(popularity.data, popularity.failure, Boolean(host.sharedHosting)),
     });
 
-    const input: ScoringInput = {
-      ...host,
-      siteBlocklisted: reputation?.data?.blocklisted ?? undefined,
-      domainRankTop100k: popularity.data?.top100k ?? undefined,
-      storeCnpj,
+    const input = scoringInputFrom({
+      hostname: domain,
+      scan: scan?.data,
+      manualCnpj: cnpjValue,
+      manualPix: pixValue,
       cnpjRecord: storeCnpj ? (cnpjRecord ?? null) : undefined,
       domainAgeDays: ageDays,
-      titleBrand: titleImpersonation(scan?.data?.title, domain) ?? undefined,
-      asksCredentials: scan?.data?.asksCredentials,
-      companyNameMismatch: cnpjRecord?.razaoSocial
-        ? !companyMatchesHost([cnpjRecord.razaoSocial, cnpjRecord.nomeFantasia], domain)
-        : undefined,
-      pix:
-        parsedPix?.merchantAccount?.key && parsedPix.keyType !== "unknown"
-          ? {
-              keyType: parsedPix.keyType,
-              keyCnpj: parsedPix.keyType === "cnpj" ? parsedPix.merchantAccount.key : undefined,
-            }
-          : undefined,
-    };
+      blocklisted: reputation?.data?.blocklisted,
+      top100k: popularity.data?.top100k,
+    });
 
     setLoading(false);
-    renderResult(computeScore(input), checks);
+    const result = computeScore(input);
+    renderResult(result, checks);
+    showShare(link, domain, t(`badge_${result.verdict}`));
     showTransportProblem(
       // A proxy without the popularity route (404) only means no ranking
       // credit; it isn't a failed check worth a warning on every result.
@@ -399,3 +411,10 @@ form.addEventListener("submit", async (event) => {
     setLoading(false);
   }
 });
+
+// Opened from a shared link (/share redirects to ?site=...): run that check.
+const sharedUrl = new URLSearchParams(location.search).get("site");
+if (sharedUrl) {
+  linkInput.value = sharedUrl.slice(0, 2048);
+  form.requestSubmit();
+}

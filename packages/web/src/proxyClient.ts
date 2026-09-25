@@ -31,6 +31,14 @@ async function getJson<T>(path: string, timeoutMs = 5000): Promise<Fetched<T>> {
   }
 }
 
+/**
+ * A link that previews this site's verdict in WhatsApp and opens the full
+ * result. The proxy computes the verdict itself; only the address travels.
+ */
+export function shareLink(siteUrl: string): string {
+  return `${PROXY_URL}/share?url=${encodeURIComponent(siteUrl)}`;
+}
+
 export function fetchCnpjRecord(cnpj: string): Promise<Fetched<CnpjRecord>> {
   return getJson<CnpjRecord>(`/cnpj/${encodeURIComponent(cnpj)}`);
 }
