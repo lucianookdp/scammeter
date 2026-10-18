@@ -79,6 +79,17 @@ const shareRow = document.getElementById("share-row")!;
 const shareWhatsapp = document.getElementById("share-whatsapp") as HTMLAnchorElement;
 const shareCopy = document.getElementById("share-copy") as HTMLButtonElement;
 const shareCopyText = document.getElementById("share-copy-text")!;
+for (const [id, url] of [
+  ["demo-safe", "https://loja-confiavel.example"],
+  ["demo-risk", "https://oferta-magazineluiza.example"],
+]) {
+  document.getElementById(id)!.addEventListener("click", () => {
+    linkInput.value = url;
+    cnpjInput.value = "";
+    pixInput.value = "";
+    form.requestSubmit();
+  });
+}
 
 const GROUPS: Record<CheckStatus, { section: HTMLElement; title: HTMLElement; list: HTMLUListElement }> = {
   alert: groupRefs("group-alert"),
@@ -252,7 +263,7 @@ function showShare(link: string, domain: string, verdictLabel: string) {
   site.hash = "";
   const url = shareLink(site.href);
   shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(
-    `Chequei ${domain} no Scammeter: ${verdictLabel}. Veja o porquê: ${url}`,
+    `Simulação fictícia no Scammeter para ${domain}: ${verdictLabel}. Veja o cenário: ${url}`,
   )}`;
   shareCopyText.textContent = t("share_copy");
   shareCopy.onclick = async () => {
@@ -281,6 +292,11 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     const key = `error_${(error as Error).message}`;
     linkError.textContent = t(key) === key ? "Cole um endereço válido, como exemplo.com.br." : t(key);
+    linkError.hidden = false;
+    return;
+  }
+  if (domain !== "loja-confiavel.example" && domain !== "oferta-magazineluiza.example") {
+    linkError.textContent = "Esta versão é uma demonstração. Escolha um dos dois cenários fictícios acima.";
     linkError.hidden = false;
     return;
   }
@@ -319,7 +335,7 @@ form.addEventListener("submit", async (event) => {
     checks.push({
       labelKey: "check_site",
       value: scan?.data?.fetched
-        ? t("check_site_read")
+        ? "Página fictícia simulada"
         : scan?.failure
           ? failureText(scan.failure)
           : cnpjValue && pixValue
@@ -403,7 +419,7 @@ form.addEventListener("submit", async (event) => {
     const searchTerm = cnpjRecord?.razaoSocial ?? domain;
     factRaEl.href = `https://www.google.com/search?q=${encodeURIComponent(`${searchTerm} reclame aqui`)}`;
     factRaTextEl.textContent = t("see_reclame_aqui");
-    factRaEl.hidden = false;
+    factRaEl.hidden = true;
   } catch {
     alertBar.textContent = t("transport_degraded");
     alertBar.hidden = false;

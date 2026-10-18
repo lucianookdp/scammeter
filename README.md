@@ -4,6 +4,11 @@ Paste a link and find out whether a Brazilian site looks like a scam, and why.
 
 **Site:** https://lucianookdp.github.io/scammeter/
 
+The GitHub Pages site is an interactive portfolio demo with two fictional
+scenarios. It makes no proxy or external data requests. Other addresses are
+not evaluated. The scoring engine and proxy source remain in this repository
+for reference.
+
 ## How it works
 
 The score adds up evidence of a scam. Every point comes with a plain-language
@@ -48,7 +53,7 @@ The address being checked is never sent to the list providers. See
 packages/
   core/       scoring rules, shared by everything else
   web/        the page, on GitHub Pages
-  proxy/      the API the page calls, on Railway
+  proxy/      original API source, not used by GitHub Pages
   extension/  browser extension (not published yet)
 ```
 
@@ -58,15 +63,13 @@ packages/
 corepack enable
 pnpm install
 pnpm test
-pnpm dev:proxy   # API on :8787
-pnpm dev:web     # page, already pointed at the local API
+pnpm dev:web     # standalone demo; no API required
 ```
 
 ## Deploy
 
-Pushes to `main` publish themselves: the page through GitHub Actions when
-`web` or `core` changes, the proxy through Railway when `proxy` or `core`
-changes and CI passes.
+Pushes to `main` publish the Pages demo through GitHub Actions when `web` or
+`core` changes.
 
 ## License
 

@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <meta name="description" content="Cole o link de um site e veja se é golpe, e por quê." />
-    <!-- The page takes a URL from a stranger and shows what a third-party API
-         says about it, so pin exactly where scripts, styles and connections
-         may come from. 'unsafe-inline' covers only the pre-paint theme script.
+    <!-- The demo has no backend connection. 'unsafe-inline' covers only
+         the pre-paint theme script.
          frame-ancestors is omitted: a <meta> CSP cannot carry it, and Pages
          serves no headers of our own. -->
     <meta
@@ -17,13 +16,13 @@
                style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
                font-src https://fonts.gstatic.com;
                img-src 'self' data:;
-               connect-src 'self' https://scammeter-proxy-production.up.railway.app http://localhost:8787;
+               connect-src 'self';
                form-action 'none';
                base-uri 'none'"
     />
     <meta name="referrer" content="no-referrer" />
     <title>Scammeter</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -77,6 +76,8 @@
 
     <main id="app">
       <div class="intro">
+        <p role="status" style="padding:12px;border:1px solid currentColor;border-radius:8px"><strong>Demonstração interativa.</strong> Os cenários abaixo usam dados fictícios. Nenhuma consulta real é feita e resultados de outros endereços ficam sem verificação.</p>
+        <p><button type="button" class="share-btn" id="demo-safe">Testar loja fictícia confiável</button> <button type="button" class="share-btn" id="demo-risk">Testar oferta fictícia suspeita</button></p>
         <h1 class="headline">Esse site é confiável?</h1>
         <p id="tagline"></p>
         <ul class="trust-points">
@@ -161,6 +162,7 @@
         <p id="alertbar" class="alertbar" role="status" hidden></p>
 
         <div id="results" class="results" hidden>
+          <p class="score-explanation"><strong>Resultado simulado:</strong> os dados de idade e conteúdo da página são fictícios. Listas externas e popularidade não foram consultadas.</p>
           <p class="score-explanation">O score soma sinais de risco; não é uma porcentagem nem a probabilidade de golpe. Idade e popularidade não apagam o alerta mais forte, e um site sem nenhum histórico não aparece como baixo risco. Dados indisponíveis não comprovam segurança.</p>
           <section class="group" id="group-alert" hidden>
             <h3 class="group-title group-title-alert"></h3>
