@@ -76,10 +76,16 @@
 
     <main id="app">
       <div class="intro">
-        <p role="status" style="padding:12px;border:1px solid currentColor;border-radius:8px"><strong>Demonstração interativa.</strong> Os cenários abaixo usam dados fictícios. Nenhuma consulta real é feita e resultados de outros endereços ficam sem verificação.</p>
-        <p><button type="button" class="share-btn" id="demo-safe">Testar loja fictícia confiável</button> <button type="button" class="share-btn" id="demo-risk">Testar oferta fictícia suspeita</button></p>
         <h1 class="headline">Esse site é confiável?</h1>
         <p id="tagline"></p>
+        <div class="demo-panel" role="note">
+          <p class="demo-panel-copy"><strong>Demonstração interativa</strong><br>Explore dois cenários fictícios. Nenhuma consulta real é feita.</p>
+          <div class="demo-actions">
+            <button type="button" class="share-btn" id="demo-safe">Testar loja fictícia confiável</button>
+            <button type="button" class="share-btn" id="demo-risk">Testar oferta fictícia suspeita</button>
+          </div>
+          <p class="demo-panel-footnote">Outros endereços ficam sem verificação nesta demo.</p>
+        </div>
         <ul class="trust-points">
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span id="chip-open-source"></span></li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span id="chip-no-tracking"></span></li>

@@ -89,7 +89,7 @@ body {
   width: 100%;
   max-width: 30rem;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 28px 20px 40px;
   flex: 1;
 }
 
@@ -243,6 +243,41 @@ body {
   line-height: 1.5;
   max-width: 34ch;
   margin: 0 0 16px;
+}
+
+.demo-panel {
+  padding: 16px;
+  margin: 0 0 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.demo-panel-copy {
+  margin: 0 0 12px;
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.demo-panel-copy strong { color: var(--ink); }
+.demo-actions {
+  display: grid;
+  gap: 8px;
+}
+.demo-actions .share-btn {
+  width: 100%;
+  min-height: 42px;
+  justify-content: center;
+  text-align: center;
+  border-radius: 9px;
+}
+.demo-panel-footnote {
+  margin: 10px 0 0;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+@media (min-width: 520px) and (max-width: 899px) {
+  .demo-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .trust-points {
