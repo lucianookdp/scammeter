@@ -16,6 +16,7 @@
     --fg: #f0f0f0;
     --muted: #a0a0a0;
     --border: #2e2f31;
+    --link: #4ade80;
   }
 }
 
@@ -94,4 +95,48 @@ body {
 .empty {
   color: var(--muted);
   font-size: 12px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.score {
+  font: 600 13px ui-monospace, "Cascadia Mono", monospace;
+  color: var(--muted);
+}
+.host {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  word-break: break-all;
+}
+.weight {
+  display: inline-block;
+  min-width: 36px;
+  font: 600 12px ui-monospace, "Cascadia Mono", monospace;
+}
+.checks {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  margin: 0 0 12px;
+  font-size: 12px;
+}
+.checks dt {
+  color: var(--muted);
+}
+.checks dd {
+  margin: 0;
+}
+.details {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--link, var(--green));
+  font-weight: 600;
+  text-decoration: none;
+}
+.details:hover {
+  text-decoration: underline;
 }

@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <meta name="description" content="Cole o link de um site e veja se é golpe, e por quê." />
-    <!-- The demo has no backend connection. 'unsafe-inline' covers only
-         the pre-paint theme script.
+    <!-- No backend of ours: the page itself asks BrasilAPI (CNPJ) and RDAP
+         (domain age) and reads the lists from its own origin. connect-src
+         allows any https because rdap.org redirects to each registry's own
+         RDAP server. 'unsafe-inline' covers only the pre-paint theme script.
          frame-ancestors is omitted: a <meta> CSP cannot carry it, and Pages
          serves no headers of our own. -->
     <meta
@@ -16,7 +18,7 @@
                style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
                font-src https://fonts.gstatic.com;
                img-src 'self' data:;
-               connect-src 'self';
+               connect-src 'self' https:;
                form-action 'none';
                base-uri 'none'"
     />
@@ -79,12 +81,11 @@
         <h1 class="headline">Esse site é confiável?</h1>
         <p id="tagline"></p>
         <div class="demo-panel" role="note">
-          <p class="demo-panel-copy"><strong>Demonstração interativa</strong><br>Explore dois cenários fictícios. Nenhuma consulta real é feita.</p>
+          <p class="demo-panel-copy"><strong>Cole qualquer link abaixo.</strong><br>Ou veja como o resultado aparece em dois exemplos fictícios:</p>
           <div class="demo-actions">
-            <button type="button" class="share-btn" id="demo-safe">Testar loja fictícia confiável</button>
-            <button type="button" class="share-btn" id="demo-risk">Testar oferta fictícia suspeita</button>
+            <button type="button" class="share-btn" id="demo-safe">Exemplo: loja confiável</button>
+            <button type="button" class="share-btn" id="demo-risk">Exemplo: oferta suspeita</button>
           </div>
-          <p class="demo-panel-footnote">Outros endereços ficam sem verificação nesta demo.</p>
         </div>
         <ul class="trust-points">
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span id="chip-open-source"></span></li>
@@ -168,7 +169,8 @@
         <p id="alertbar" class="alertbar" role="status" hidden></p>
 
         <div id="results" class="results" hidden>
-          <p class="score-explanation"><strong>Resultado simulado:</strong> os dados de idade e conteúdo da página são fictícios. Listas externas e popularidade não foram consultadas.</p>
+          <p class="score-explanation" id="note-simulated" hidden><strong>Exemplo fictício:</strong> a idade, o conteúdo da página e as consultas deste resultado são simulados.</p>
+          <p class="score-explanation" id="note-partial" hidden><strong>Pelo site</strong> contam o endereço, a idade do domínio, a lista de phishing, a popularidade e o CNPJ ou Pix que você informar. A leitura da própria página (título, campos de senha ou cartão e CNPJ publicado) só é feita pela extensão, porque o navegador não deixa um site ler outro.</p>
           <p class="score-explanation">O score soma sinais de risco; não é uma porcentagem nem a probabilidade de golpe. Idade e popularidade não apagam o alerta mais forte, e um site sem nenhum histórico não aparece como baixo risco. Dados indisponíveis não comprovam segurança.</p>
           <section class="group" id="group-alert" hidden>
             <h3 class="group-title group-title-alert"></h3>

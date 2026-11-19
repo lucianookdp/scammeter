@@ -4,7 +4,8 @@
 
 Source: https://github.com/phishdestroy/destroylist
 
-Scammeter downloads the primary `list.txt` feed into server memory. The data
+Scammeter downloads the primary `list.txt` feed at build time and ships it with
+the page and the extension (which also refreshes it daily). The data
 is maintained by PhishDestroy and can contain errors or miss new threats.
 
 MIT License
@@ -33,8 +34,9 @@ SOFTWARE.
 
 Source: https://tranco-list.eu/
 
-Scammeter downloads the latest `top-1m.csv.zip` once a day and keeps the top
-100,000 registrable domains in server memory, to credit popular sites. The list
+Scammeter downloads the latest `top-1m.csv.zip` at build time and ships the
+top 100,000 registrable domains with the page and the extension, to credit
+popular sites. The list
 is a research ranking and can include domains that are popular for bad reasons.
 
 Le Pochat, V., Van Goethem, T., Tajalizadehkhoob, S., Korczyński, M., & Joosen,

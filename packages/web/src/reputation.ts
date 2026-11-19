@@ -1,5 +1,5 @@
 import type { CheckStatus, ReputationResult } from "@scammeter/core";
-import type { FetchFailure } from "./proxyClient";
+import type { FetchFailure } from "./dataClient";
 import { t } from "./i18n";
 
 export function reputationCheck(data: ReputationResult | null, failure: FetchFailure | null): { value: string; state: CheckStatus } {

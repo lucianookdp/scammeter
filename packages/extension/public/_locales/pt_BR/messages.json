@@ -3,7 +3,7 @@
     "message": "Scammeter"
   },
   "extDescription": {
-    "message": "Diz se um site brasileiro é golpe, e por quê."
+    "message": "Avisa se um site brasileiro parece golpe e explica por quê: CNPJ, Pix, idade do domínio, imitação de marca e lista de phishing."
   },
   "badge_baixo_risco": {
     "message": "Baixo risco"
@@ -358,5 +358,32 @@
   },
   "check_domain_shared": {
     "message": "{platform} · plataforma compartilhada, a idade do domínio não vale para esta página"
+  },
+  "banner_hint": {
+    "message": "Clique no ícone do Scammeter na barra do navegador para ver os motivos."
+  },
+  "banner_close": {
+    "message": "Fechar aviso"
+  },
+  "popup_details": {
+    "message": "Ver análise completa no site"
+  },
+  "popup_skipped": {
+    "message": "não consultadas: site muito acessado ou oficial (protege sua privacidade)"
+  },
+  "check_lookups": {
+    "message": "Consultas externas"
+  },
+  "unit_day": {
+    "message": "dia"
+  },
+  "unit_days": {
+    "message": "dias"
+  },
+  "unit_year": {
+    "message": "ano"
+  },
+  "unit_years": {
+    "message": "anos"
   }
 }

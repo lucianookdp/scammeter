@@ -1,5 +1,5 @@
 import type { CheckStatus } from "@scammeter/core";
-import type { FetchFailure, PopularityResult } from "./proxyClient";
+import type { FetchFailure, PopularityResult } from "./dataClient";
 import { t } from "./i18n";
 
 export function popularityCheck(

@@ -3,7 +3,7 @@
     "message": "Scammeter"
   },
   "extDescription": {
-    "message": "Tells you if a Brazilian site is a scam, and why."
+    "message": "Warns you when a Brazilian site looks like a scam and explains why: company ID, Pix, domain age, brand imitation and phishing list."
   },
   "badge_baixo_risco": {
     "message": "Low risk"
@@ -358,5 +358,32 @@
   },
   "check_domain_shared": {
     "message": "{platform} · shared platform, the domain's age doesn't count for this page"
+  },
+  "banner_hint": {
+    "message": "Click the Scammeter icon in the browser toolbar to see why."
+  },
+  "banner_close": {
+    "message": "Close warning"
+  },
+  "popup_details": {
+    "message": "See the full analysis on the website"
+  },
+  "popup_skipped": {
+    "message": "not made: very popular or official site (keeps your browsing private)"
+  },
+  "check_lookups": {
+    "message": "External lookups"
+  },
+  "unit_day": {
+    "message": "day"
+  },
+  "unit_days": {
+    "message": "days"
+  },
+  "unit_year": {
+    "message": "year"
+  },
+  "unit_years": {
+    "message": "years"
   }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { popularityCheck } from "../src/popularity";
-import type { PopularityResult } from "../src/proxyClient";
+import type { PopularityResult } from "../src/dataClient";
 
 const result: PopularityResult = {
   top100k: true, rank: 1234, domain: "example.com", source: "Tranco", sourceUrl: "https://tranco-list.eu/",

@@ -5,3 +5,4 @@ export * from "./pix.js";
 export * from "./scoring.js";
 export * from "./page.js";
 export * from "./assemble.js";
+export * from "./lookups.js";

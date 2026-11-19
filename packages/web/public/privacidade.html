@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Scammeter · Política de privacidade</title>
+    <style>
+      :root { color-scheme: light dark; --fg: #1a1a1a; --bg: #fff; --muted: #555; --accent: #1e7d32; }
+      @media (prefers-color-scheme: dark) { :root { --fg: #eee; --bg: #151617; --muted: #aaa; --accent: #4ade80; } }
+      body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+      main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+      h1 { font-size: 1.6rem; margin: 0 0 4px; }
+      h2 { font-size: 1.1rem; margin: 32px 0 8px; }
+      p, li { color: var(--fg); }
+      .muted { color: var(--muted); font-size: .9rem; }
+      a { color: var(--accent); }
+      table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+      th, td { text-align: left; padding: 8px; border-bottom: 1px solid color-mix(in srgb, var(--fg) 15%, transparent); vertical-align: top; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Política de privacidade do Scammeter</h1>
+      <p class="muted">Vale para a extensão do Scammeter e para o site lucianookdp.github.io/scammeter. Atualizada em 19 de novembro de 2026.</p>
+
+      <h2>Resumo</h2>
+      <p>O Scammeter não tem servidor, não tem conta, não tem anúncios e não guarda nem vende dados de ninguém. A análise acontece no seu próprio navegador.</p>
+
+      <h2>O que a extensão lê</h2>
+      <p>Em cada página que você abre, a extensão primeiro confere apenas o endereço do site em listas que já vêm dentro dela. Se o site for conhecido (muito acessado, oficial de uma marca ou do governo), a análise termina aí e a página não é lida.</p>
+      <p>Só em sites desconhecidos ela lê, dentro do seu computador, o título da página, se há campos de senha ou cartão, um CNPJ publicado e um código Pix. Nada do conteúdo da página sai do seu computador, com as duas exceções da tabela abaixo.</p>
+
+      <h2>O que é consultado fora do seu computador</h2>
+      <table>
+        <tr><th>O quê</th><th>Para quem</th><th>Quando</th></tr>
+        <tr><td>O CNPJ encontrado na página (ou digitado por você no site)</td><td><a href="https://brasilapi.com.br/">BrasilAPI</a>, que repassa dados públicos da Receita Federal</td><td>Só em sites desconhecidos que publicam um CNPJ</td></tr>
+        <tr><td>O nome do domínio (por exemplo, loja-exemplo.com.br)</td><td>O serviço público RDAP do registro do domínio (<a href="https://rdap.registro.br/">registro.br</a> para .br, <a href="https://rdap.org/">rdap.org</a> para os demais)</td><td>Só em sites desconhecidos, para saber há quanto tempo o domínio existe</td></tr>
+      </table>
+      <p>O endereço completo da página, o que você digita e o conteúdo da página nunca são enviados a ninguém, e o Scammeter não tem servidor para receber nada. As duas consultas acima partem do seu navegador, como qualquer acesso a um site (esses serviços veem o seu endereço IP, como qualquer site veria), e seguem as políticas deles.</p>
+
+      <h2>Listas</h2>
+      <p>A lista de phishing (<a href="https://github.com/phishdestroy/destroylist">PhishDestroy</a>) e a lista de sites mais acessados (<a href="https://tranco-list.eu/">Tranco</a>) vêm inteiras dentro da extensão. Uma vez por dia a extensão baixa de novo a lista de phishing do GitHub. Nesse download, nenhum endereço que você visitou é enviado.</p>
+
+      <h2>O que fica guardado no seu navegador</h2>
+      <ul>
+        <li>O resultado da análise de cada aba aberta, apagado quando a aba fecha ou muda de página.</li>
+        <li>A idade de domínios (7 dias) e dados de CNPJ (1 dia) já consultados, para não perguntar de novo.</li>
+        <li>A cópia atualizada da lista de phishing.</li>
+      </ul>
+      <p>Tudo fica só no armazenamento local da extensão. Desinstalar a extensão apaga tudo.</p>
+
+      <h2>O que não fazemos</h2>
+      <ul>
+        <li>Não vendemos, alugamos nem compartilhamos dados.</li>
+        <li>Não usamos dados para publicidade, perfil de usuário ou análise de crédito.</li>
+        <li>Não há rastreamento, cookies de terceiros nem estatísticas de uso.</li>
+      </ul>
+
+      <h2>Código aberto e contato</h2>
+      <p>Todo o código está em <a href="https://github.com/lucianookdp/scammeter">github.com/lucianookdp/scammeter</a>. Dúvidas ou problemas: abra uma <a href="https://github.com/lucianookdp/scammeter/issues">issue</a>.</p>
+    </main>
+  </body>
+</html>

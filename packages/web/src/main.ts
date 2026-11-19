@@ -15,7 +15,17 @@ import { t } from "./i18n";
 import { reputationCheck } from "./reputation";
 import { getTheme, setTheme } from "./theme";
 import { parseSiteUrl } from "./url";
-import { fetchCnpjRecord, fetchDomainInfo, fetchPopularity, fetchReputation, fetchScan, shareLink, type FetchFailure } from "./proxyClient";
+import {
+  fetchCnpjRecord,
+  fetchDomainInfo,
+  fetchPopularity,
+  fetchReputation,
+  fetchScan,
+  isDemo,
+  preloadLists,
+  shareLink,
+  type FetchFailure,
+} from "./dataClient";
 import { popularityCheck } from "./popularity";
 
 // Lucide icons (ISC license), inlined as static markup — no icon-font/JS dependency needed.
@@ -79,6 +89,12 @@ const shareRow = document.getElementById("share-row")!;
 const shareWhatsapp = document.getElementById("share-whatsapp") as HTMLAnchorElement;
 const shareCopy = document.getElementById("share-copy") as HTMLButtonElement;
 const shareCopyText = document.getElementById("share-copy-text")!;
+const noteSimulated = document.getElementById("note-simulated") as HTMLParagraphElement;
+const notePartial = document.getElementById("note-partial") as HTMLParagraphElement;
+
+// The lists are a couple of megabytes; start fetching them as soon as someone
+// shows intent, so the first check rarely waits on them.
+linkInput.addEventListener("focus", () => void preloadLists(), { once: true });
 for (const [id, url] of [
   ["demo-safe", "https://loja-confiavel.example"],
   ["demo-risk", "https://oferta-magazineluiza.example"],
@@ -263,7 +279,9 @@ function showShare(link: string, domain: string, verdictLabel: string) {
   site.hash = "";
   const url = shareLink(site.href);
   shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(
-    `Simulação fictícia no Scammeter para ${domain}: ${verdictLabel}. Veja o cenário: ${url}`,
+    isDemo(domain)
+      ? `Exemplo fictício no Scammeter para ${domain}: ${verdictLabel}. Veja: ${url}`
+      : `Verifiquei ${domain} no Scammeter: ${verdictLabel}. Veja o porquê: ${url}`,
   )}`;
   shareCopyText.textContent = t("share_copy");
   shareCopy.onclick = async () => {
@@ -295,11 +313,9 @@ form.addEventListener("submit", async (event) => {
     linkError.hidden = false;
     return;
   }
-  if (domain !== "loja-confiavel.example" && domain !== "oferta-magazineluiza.example") {
-    linkError.textContent = "Esta versão é uma demonstração. Escolha um dos dois cenários fictícios acima.";
-    linkError.hidden = false;
-    return;
-  }
+  const demo = isDemo(domain);
+  noteSimulated.hidden = !demo;
+  notePartial.hidden = demo;
 
   const cnpjValue = cnpjInput.value.trim();
   const pixValue = pixInput.value.trim();
@@ -328,7 +344,7 @@ form.addEventListener("submit", async (event) => {
 
     const storeCnpj = storeCnpjFrom({ scan: scan?.data, manualCnpj: cnpjValue });
     if (!cnpjValue) {
-      if (!scan?.data?.fetched) showScanHint("scan_unreachable");
+      if (!scan?.data?.fetched) showScanHint(demo ? "scan_unreachable" : "scan_web_only");
       else if (!scan.data.cnpj) showScanHint("scan_no_cnpj");
     }
 
@@ -340,7 +356,7 @@ form.addEventListener("submit", async (event) => {
           ? failureText(scan.failure)
           : cnpjValue && pixValue
             ? t("check_site_skipped")
-            : t("check_site_unreachable"),
+            : t("check_site_web_only"),
       state: scan?.data?.fetched ? "ok" : "unverified",
     });
 
@@ -369,7 +385,7 @@ form.addEventListener("submit", async (event) => {
         ? `${cnpjRecord.razaoSocial} · ${formatCnpj(storeCnpj as string)} · ${CNPJ_STATUS_LABEL[cnpjRecord.status] ?? cnpjRecord.status}`
         : storeCnpj
           ? (cnpjResult?.failure ? failureText(cnpjResult.failure) : t("check_cnpj_unknown"))
-          : t(scan?.data?.fetched ? "check_cnpj_none" : "check_cnpj_unknown"),
+          : t(scan?.data?.fetched ? "check_cnpj_none" : demo ? "check_cnpj_unknown" : "check_cnpj_web_only"),
       state: cnpjRecord?.status === "ativa" ? "ok" : cnpjRecord && ["baixada", "inapta", "suspensa", "nula"].includes(cnpjRecord.status) ? "alert" : "unverified",
     });
 
@@ -379,7 +395,7 @@ form.addEventListener("submit", async (event) => {
         ? t(`pix_key_${parsedPix.keyType}`)
         : pixPayload
           ? t("check_pix_unreadable")
-          : (scan?.data?.fetched ? t("check_pix_none") : "Não foi possível verificar se há Pix nesta página."),
+          : (scan?.data?.fetched ? t("check_pix_none") : t("check_pix_web_only")),
       state: parsedPix?.merchantAccount?.key ? (parsedPix.keyType === "cnpj" ? "ok" : "alert") : "unverified",
     });
 

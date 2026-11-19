@@ -6,7 +6,12 @@ on:
     paths:
       - "packages/web/**"
       - "packages/core/**"
+      - "scripts/**"
       - ".github/workflows/deploy-web.yml"
+  # The page reads the phishing and popularity lists from its own origin;
+  # rebuilding daily keeps them fresh (the lookup refuses a copy over 3 days old).
+  schedule:
+    - cron: "17 6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -28,6 +33,7 @@ jobs:
           node-version: 22
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
+      - run: pnpm lists
       - run: pnpm build:web
       - uses: actions/upload-pages-artifact@v3
         with:
