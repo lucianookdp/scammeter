@@ -5,10 +5,10 @@ Tudo o que o painel de desenvolvedor pede, pronto para colar. O pacote é
 
 ## Detalhes do produto
 
-**Nome:** Scammeter (vem do manifest)
+**Nome (vem do manifest):** Scammeter: detector de golpes e sites falsos
 
 **Resumo (vem do manifest, 132 caracteres no máximo):**
-Avisa se um site brasileiro parece golpe e explica por quê: CNPJ, Pix, idade do domínio, imitação de marca e lista de phishing.
+Descubra se um site é golpe ou loja falsa antes de comprar ou pagar o Pix. Confere CNPJ, Pix, idade do domínio e lista de phishing.
 
 **Categoria:** Ferramentas (Tools)
 
@@ -17,7 +17,9 @@ Avisa se um site brasileiro parece golpe e explica por quê: CNPJ, Pix, idade do
 **Descrição:**
 
 ```
-O Scammeter avisa quando um site parece golpe, e mostra o porquê.
+Esse site é confiável ou é golpe? O Scammeter avisa quando uma loja parece falsa, quando um link é phishing ou quando o Pix vai para a pessoa errada, e mostra o porquê.
+
+Feito para o Brasil: lojas falsas com preço bom demais, golpe do Pix, sites que imitam bancos e grandes lojas, links recebidos por SMS, e-mail ou WhatsApp.
 
 Você navega normalmente. Em cada site que abre, o Scammeter confere sozinho:
 • se o endereço imita uma marca conhecida (ex.: "magazineluiza-ofertas.shop");

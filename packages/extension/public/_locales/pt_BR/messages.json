@@ -1,9 +1,9 @@
 {
   "extName": {
-    "message": "Scammeter"
+    "message": "Scammeter: detector de golpes e sites falsos"
   },
   "extDescription": {
-    "message": "Avisa se um site brasileiro parece golpe e explica por quê: CNPJ, Pix, idade do domínio, imitação de marca e lista de phishing."
+    "message": "Descubra se um site é golpe ou loja falsa antes de comprar ou pagar o Pix. Confere CNPJ, Pix, idade do domínio e lista de phishing."
   },
   "badge_baixo_risco": {
     "message": "Baixo risco"

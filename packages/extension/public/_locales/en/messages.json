@@ -1,9 +1,9 @@
 {
   "extName": {
-    "message": "Scammeter"
+    "message": "Scammeter: scam and fake website detector"
   },
   "extDescription": {
-    "message": "Warns you when a Brazilian site looks like a scam and explains why: company ID, Pix, domain age, brand imitation and phishing list."
+    "message": "Find out if a Brazilian site is a scam or a fake store before you buy or pay by Pix. Checks company ID, Pix, domain age, phishing."
   },
   "badge_baixo_risco": {
     "message": "Low risk"
