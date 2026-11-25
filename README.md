@@ -9,6 +9,8 @@ No server, no account, no tracking.
 
 **Try it:** https://lucianookdp.github.io/scammeter/
 
+[![Instalar no Chrome / Get it on the Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Instalar%20%2F%20Install-1f7a4d?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/scammeter/ggdfieojdidphlaboocccagclecnlhja)
+
 [Português](#português) · [English](#english)
 
 ![The extension warning on a fake shop that asks for Pix to a personal key](packages/extension/store/screenshot-1-aviso.png)
@@ -18,7 +20,7 @@ No server, no account, no tracking.
 **O que é.** O Scammeter diz se um site parece golpe e mostra cada motivo,
 com o peso de cada um na nota. Funciona de dois jeitos:
 
-- **Extensão para o Chrome:** você navega normalmente e ela confere sozinha
+- **[Extensão para o Chrome](https://chromewebstore.google.com/detail/scammeter/ggdfieojdidphlaboocccagclecnlhja):** você navega normalmente e ela confere sozinha
   cada site que você abre. Quando o risco é alto, aparece uma faixa vermelha no
   topo da página; o ícone na barra mostra ✓, !, !! ou !!!. Clicando no ícone,
   você vê os motivos.
@@ -96,6 +98,9 @@ and the page is never read. Only for an unknown site does the content script
 read the page (once idle, with `textContent`, so no forced layout) and send a
 few values back. Only red verdicts get a banner; yellow stays on the toolbar
 badge.
+
+Install it from the
+[Chrome Web Store](https://chromewebstore.google.com/detail/scammeter/ggdfieojdidphlaboocccagclecnlhja).
 
 Permissions: `storage`, `unlimitedStorage`, and host access to the four data
 sources only. Store listing texts and images are in
